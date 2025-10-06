@@ -1,9 +1,72 @@
 # Project Proposal
-
 ## Motivation
 
-## Objectives and Key Features
+Blockchain technology has been popular in recent years, especially within decentralized finance (DeFi). Smart contracts in DeFi enable transparent, autonomous, and trustless financial transactions by executing predetermined rules without intermediaries. However, the complexity and immutability of smart contracts mean that vulnerabilities or inefficiencies can lead to substantial financial losses, as evidenced by several high-profile DeFi exploits in recent years. To address these challenges, developers are increasingly turning to safer and more performant programming languages like Rust to enhance the reliability and robustness of blockchain applications.
 
+Rust is known for its memory safety guarantees, strong support for concurrency, and high-performance execution. These features have made Rust a language of choice for building secure and performant blockchain platforms. Major blockchains like Solana use Rust to implement smart contracts, enhancing code correctness and execution efficiency. Despite Rust's rising prominence in blockchain core development, there remains a noticeable gap in end-to-end projects that integrate both on-chain smart contract logic and off-chain client applications entirely in Rust. We found that established Solana DEXs (e.g., Raydium, Orca, Meteora) typically implement client components in TypeScript or Python. This gap presents an opportunity to explore cohesive Rust-based decentralized application stacks.
+
+Motivated by this gap, our team aims to develop an Automated Market Maker (AMM) decentralized exchange on Solana, complemented by a Rust-based command-line wallet and autonomous trading agent. This project excites us as it challenges us to apply Rust across the entire stack, from smart contract development to client interaction, while deepening our understanding of decentralized trading mechanisms and secure blockchain systems.
+
+---
+## Objectives and Key Features
+**Objective**
+
+We aim to design and implement a small-scale, fully functional AMM decentralized exchange (DEX) on the Solana blockchain using Rust. This will be accompanied by a Rust-based autonomous trading agent and a command-line wallet interface. The system will enable users to:
+* Initialize new token pools.
+* Provide or remove liquidity.
+* Swap tokens through pools.
+* Authorize an automated agent to perform trades or rebalance liquidity based on predefined strategies.
+
+The final product will demonstrate a comprehensive decentralized financial application built entirely in Rust, showcasing cohesive on-chain smart contract design and off-chain automation within one ecosystem.
+
+**Key Features**
+
+1. AMM Smart Contract (On-Chain Program)
+
+* Implemented in Rust using the Anchor framework.
+* Employs the constant-product pricing formula ($\text {x×y=k}$) for token swaps.
+* Core functions:
+    * `initialize_pool()` — create token pair pools.
+    * `add_liquidity()` / `remove_liquidity()` — deposit or withdraw assets in exchange for LP tokens.
+    * `swap()` — execute token swaps with slippage protection and transaction fees.
+* Emits structured events for activity tracking.
+* Includes security measures such as overflow checks, signer verification, and account ownership validation
+
+ 
+2. Command-Line Interface (CLI) Wallet
+- Developed in Rust using `clap` and `solana-client` libraries.
+- Enables users to:
+    * Create and manage pools.
+    * Add or remove liquidity.
+    * Execute token swaps.
+    * Inspect on-chain pool states and transaction history.
+    * Supports local Solana test validator and Solana devnet operation.
+
+
+3. Rust Agent (Autonomous Off-Chain Executor)
+- A continuously running daemon implemented with Rust’s async ecosystem (tokio and axum).
+- Connects to Solana RPC to fetch pool states and market data.
+- Executes predefined trading strategies, such as:
+    - Band Market-Making — automatic buy/sell within target price ranges.
+    - Arbitrage Simulation — detect price deviations and rebalance liquidity.
+- Integrates risk controls, including per-trade/daily limits, slippage thresholds, and whitelist filters.
+- Supports HTTP-based pause/resume controls.
+- Interfaces with the CLI wallet for authorization and real-time monitoring.
+
+**Architecture and Code Organization**
+
+Our current idea of the entire project architecture is shown below:
+
+```
+project-root/
+├─ amm_dex/        # Anchor smart contract
+├─ cli/            # Rust CLI wallet
+├─ agent/          # Rust daemon for strategy automation
+├─ tests/          # Integration and stress tests
+└─ README.md       # Documentation and project proposal
+```
+
+---
 ## Tentative Plan
 
 Below is our 10-week plan (Oct 6 – Dec 14) for designing, implementing, and testing the Solana AMM DEX, organized into four development phases.
