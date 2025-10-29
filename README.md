@@ -133,7 +133,7 @@ Below is our 10-week plan (Oct 6 – Dec 14) for designing, implementing, and te
 ---
 ### **Division of Responsibilities**
 
-|**Component**|**Developer A**|**Developer B**|
+|**Component**|**Chia-Chun Wu**|**Yuanhan Chen**|
 |---|---|---|
 |**Solana Program (Anchor)**|Implement pool initialization and liquidity management logic; write unit tests for program modules.|Implement swap and fee logic; handle PDA account structure and integration testing.|
 |**CLI Wallet (Rust + clap)**|Build command-line parsing and transaction submission flow.|Implement response handling, result formatting, and CLI documentation.|
