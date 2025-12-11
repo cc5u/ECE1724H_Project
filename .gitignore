@@ -1,0 +1,11 @@
+# General
+.DS_Store
+.anchor
+
+# Rust build
+target/
+
+# amm_dex
+amm_dex/target/
+amm_dex/**/*.rs.bk
+amm_dex/test-ledger/
