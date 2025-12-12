@@ -3,7 +3,7 @@ use anchor_spl::token::{
     Mint, Token, TokenAccount,
 };
 
-declare_id!("B1mAEmLXkPVTS1pqUUYUoWL1ATVGBaN7UDw6NVokh4Au");
+declare_id!("2Cmtsw7yaqWoaya4Mxc9zXa1GyXWUVevwg2ZXr7oTDxV");
 
 #[program]
 pub mod amm_dex {

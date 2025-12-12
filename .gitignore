@@ -2,6 +2,8 @@
 .DS_Store
 .anchor
 
+test-ledger/
+
 # Rust build
 target/
 
