@@ -43,6 +43,18 @@ pub struct RemoveLiquidityArgs {
     pub lp_amount: u64,
 }
 
+#[derive(Args, Debug)]
+pub struct SwapArgs {
+    #[arg(long)]
+    pub pool: String,
+    #[arg(long)]
+    pub amount_in: u64,
+    #[arg(long)]
+    pub minimum_out: u64,
+    #[arg(long)]
+    pub is_a_to_b: bool,
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     // Initialize a new AMM pool
@@ -53,4 +65,7 @@ pub enum Commands {
 
     // Remove liquidity and redeem underlying tokens
     RemoveLiquidity(RemoveLiquidityArgs),
+
+    // Swap between two tokens in the pool
+    Swap(SwapArgs),
 }

@@ -38,6 +38,10 @@ fn main() -> anyhow::Result<()> {
         Commands::RemoveLiquidity(args) => {
             cmd_rm_liquidity(&program, &payer, args)?;
         }
+
+        Commands::Swap(args) => {
+            cmd_swap(&program, &payer, args)?;
+        }
     }
     Ok(())
 }
