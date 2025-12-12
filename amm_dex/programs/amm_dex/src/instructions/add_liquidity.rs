@@ -82,7 +82,6 @@ pub fn add_liquidity(
         );
 
         // Very simple LP valuation: lp = amount_a + amount_b
-        // (for a class project, this is sufficient)
         let lp_amount = amount_a_desired
             .checked_add(amount_b_desired)
             .ok_or(AmmError::MathOverflow)?;
