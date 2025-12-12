@@ -1,9 +1,7 @@
 use crate::state::*;
 
 use anchor_lang::prelude::*;
-use anchor_spl::token::{
-    Mint, Token, TokenAccount,
-};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 #[derive(Accounts)]
 pub struct InitializePool<'info> {
@@ -49,7 +47,7 @@ pub struct InitializePool<'info> {
     #[account(
         init,
         payer = payer,
-        mint::decimals = 9,                
+        mint::decimals = 9,
         mint::authority = pool_authority,
     )]
     pub lp_mint: Account<'info, Mint>,
@@ -63,10 +61,7 @@ pub struct InitializePool<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn initialize_pool(
-    ctx: Context<InitializePool>,
-    fee_bps: u16,
-) -> Result<()> {
+pub fn initialize_pool(ctx: Context<InitializePool>, fee_bps: u16) -> Result<()> {
     let pool = &mut ctx.accounts.pool;
 
     pool.authority = ctx.accounts.pool_authority.key();
@@ -81,4 +76,3 @@ pub fn initialize_pool(
 
     Ok(())
 }
-

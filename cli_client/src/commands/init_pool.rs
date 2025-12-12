@@ -3,18 +3,18 @@ use std::rc::Rc;
 
 use anchor_lang::prelude::Pubkey;
 
-use anchor_client::Program;
-use solana_system_interface::program;
-use anchor_spl::token as spl_token;
 use amm_dex::accounts as amm_accounts;
 use amm_dex::instruction as amm_ix;
+use anchor_client::Program;
+use anchor_spl::token as spl_token;
+use solana_system_interface::program;
 
 use crate::cli::*;
 
 pub fn cmd_init_pool(
     program: &Program<Rc<Keypair>>,
     payer: &Rc<Keypair>,
-    args: InitPoolArgs
+    args: InitPoolArgs,
 ) -> anyhow::Result<()> {
     // parse pubkeys
     let token_a_mint = args.token_a_mint.parse::<Pubkey>()?;
@@ -65,10 +65,5 @@ pub fn cmd_init_pool(
     println!("Token B vault     : {}", token_b_vault.pubkey());
     println!("LP mint           : {}", lp_mint.pubkey());
 
-
     Ok(())
 }
-
-
-
-

@@ -2,7 +2,7 @@ use clap::{Args, Parser, Subcommand};
 
 #[derive(Debug, Parser)]
 #[command(name = "dex-cli", about = "Rust CLI wallet for AMM DEX")]
-pub struct CliArgs{
+pub struct CliArgs {
     // Solana cluster: localnet, devnet, mainnet
     #[arg(long, default_value = "localnet")]
     pub cluster: String,

@@ -79,8 +79,9 @@ solana account <TOKEN_B_VAULT_PUBKEY>
 spl-token supply <LP_MINT_PUBKEY>
 ```
 
-# 5. Create ATA account for Token A, B and LP mint
+# 5. Create ATA account for Token A and Token B
 
+Create ATAs for your token mints (the CLI will create the LP ATA for you if it's missing):
 ```
 spl-token create-account <MINT_PUBKEY>
 ```
@@ -91,7 +92,7 @@ spl-token create-account <MINT_PUBKEY>
 
 add token to user ATA account, run for both token
 ```
-spl-token mint <MINT_PUBKEY> 100000000000 <ATA_KEY>
+spl-token mint <MINT_PUBKEY> 10000000000 <ATA_KEY>
 ```
 
 add liquidity

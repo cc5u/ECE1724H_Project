@@ -1,20 +1,16 @@
 mod cli;
 mod commands;
 
-use clap::Parser;
 use crate::cli::*;
 use crate::commands::*;
+use clap::Parser;
 
-use anchor_client::{
-    Client,
-    Cluster,
-};
+use anchor_client::{Client, Cluster};
 
 use anchor_client::solana_sdk::signature::read_keypair_file;
 use std::rc::Rc;
 
-fn main() -> anyhow::Result<()>{
-
+fn main() -> anyhow::Result<()> {
     let cli = cli::CliArgs::parse();
 
     let cluster = match cli.cluster.as_str() {
@@ -24,8 +20,7 @@ fn main() -> anyhow::Result<()>{
     };
 
     let keypair_path = shellexpand::tilde(&cli.keypair).to_string();
-    let payer = read_keypair_file(&keypair_path)
-        .expect("Failed to read keypair file");
+    let payer = read_keypair_file(&keypair_path).expect("Failed to read keypair file");
     let payer = Rc::new(payer);
 
     let client = Client::new_with_options(cluster, payer.clone(), Default::default());
@@ -42,6 +37,3 @@ fn main() -> anyhow::Result<()>{
     }
     Ok(())
 }
-
-
-

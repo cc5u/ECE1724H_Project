@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 use instructions::*;
-pub mod state;
-pub mod instructions;
 pub mod error;
+pub mod instructions;
+pub mod state;
 pub mod utils;
 
 declare_id!("Ag4VtauT33Q54JioCeAc29ZzbEFAqEfbCPTDq1jjvU2C");
@@ -11,10 +11,7 @@ declare_id!("Ag4VtauT33Q54JioCeAc29ZzbEFAqEfbCPTDq1jjvU2C");
 pub mod amm_dex {
     use super::*;
 
-    pub fn initialize_pool(
-        ctx: Context<InitializePool>,
-        fee_bps: u16,
-    ) -> Result<()> {
+    pub fn initialize_pool(ctx: Context<InitializePool>, fee_bps: u16) -> Result<()> {
         instructions::initialize_pool(ctx, fee_bps)
     }
 
@@ -26,5 +23,3 @@ pub mod amm_dex {
         add_liquidity::add_liquidity(ctx, amount_a_desired, amount_b_desired)
     }
 }
-
-

@@ -1,11 +1,9 @@
-use crate::state::*;
 use crate::error::AmmError;
+use crate::state::*;
 use crate::utils::*;
 
 use anchor_lang::prelude::*;
-use anchor_spl::token::{
-    self, Mint, Token, TokenAccount, Transfer, MintTo,
-};
+use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct AddLiquidity<'info> {
@@ -133,11 +131,7 @@ pub fn add_liquidity(
 
     // Mint LP tokens to user (signed by pool_authority PDA)
     let pool_key = pool.key();
-    let seeds: &[&[u8]] = &[
-        b"pool_authority",
-        pool_key.as_ref(),
-        &[pool.authority_bump],
-    ];
+    let seeds: &[&[u8]] = &[b"pool_authority", pool_key.as_ref(), &[pool.authority_bump]];
     let signer_seeds = &[seeds];
 
     let cpi_accounts_mint_lp = MintTo {
@@ -145,8 +139,11 @@ pub fn add_liquidity(
         to: user_lp_token.to_account_info(),
         authority: ctx.accounts.pool_authority.to_account_info(),
     };
-    let cpi_ctx_mint_lp =
-        CpiContext::new_with_signer(token_program.to_account_info(), cpi_accounts_mint_lp, signer_seeds);
+    let cpi_ctx_mint_lp = CpiContext::new_with_signer(
+        token_program.to_account_info(),
+        cpi_accounts_mint_lp,
+        signer_seeds,
+    );
     token::mint_to(cpi_ctx_mint_lp, lp_to_mint)?;
 
     Ok(())
