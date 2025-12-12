@@ -42,6 +42,10 @@ fn main() -> anyhow::Result<()> {
         Commands::Swap(args) => {
             cmd_swap(&program, &payer, args)?;
         }
+
+        Commands::InspectPool(args) => {
+            cmd_inspect_pool(&program, args)?;
+        }
     }
     Ok(())
 }

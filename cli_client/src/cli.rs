@@ -55,6 +55,12 @@ pub struct SwapArgs {
     pub is_a_to_b: bool,
 }
 
+#[derive(Args, Debug)]
+pub struct InspectPoolArgs{
+    #[arg(long)]
+    pub pool: String
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     // Initialize a new AMM pool
@@ -68,4 +74,7 @@ pub enum Commands {
 
     // Swap between two tokens in the pool
     Swap(SwapArgs),
+
+    // Inspect info of the pool
+    InspectPool(InspectPoolArgs),
 }

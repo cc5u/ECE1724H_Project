@@ -1,13 +1,11 @@
 POOL_PUBKEY=7qeryxM274jkK7K6AnJkrZABv1DiJkBQ9WZKzyL9nngx
 
 cd cli_client
-echo "=== Remove Liquidity ==="
-cargo run -- \
+echo "=== Pool Inspection ==="
+cargo run -p cli_client --  \
     --cluster localnet \
     --keypair ~/.config/solana/id.json \
-    remove-liquidity \
+    inspect-pool \
     --pool "$POOL_PUBKEY" \
-    --lp-amount 4000000000
+    
 echo ""
-echo "=== User ATA Accounts ==="
-spl-token accounts

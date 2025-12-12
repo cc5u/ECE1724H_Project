@@ -42,7 +42,7 @@ pub fn swap(
     is_a_to_b: bool,
 ) -> Result<()> {
     // 1. Determine input/output vaults based on direction.
-    // 2. Compute output_amount using x*y=k with fee:
+    // 2. Compute output_amount using x * y = k with fee:
     //      amount_in_after_fee = amount_in * (1_0000 - fee_bps) / 1_0000;
     //      new_reserve_in = reserve_in + amount_in_after_fee;
     //      new_reserve_out = k / new_reserve_in;

@@ -1,4 +1,4 @@
-POOL_PUBKEY=5UiF4g1JjbbCrrDi5KE6DJUp71LRxwGkhFU9qYHHLCqn
+POOL_PUBKEY=7qeryxM274jkK7K6AnJkrZABv1DiJkBQ9WZKzyL9nngx
 
 cd cli_client
 echo "=== Add Liquidity ==="
@@ -8,7 +8,7 @@ cargo run -- \
     add-liquidity \
     --pool "$POOL_PUBKEY" \
     --amount-a 2000000000 \
-    --amount-b 4000000000
+    --amount-b 8000000000
 echo ""
 echo "=== User ATA Accounts ==="
 spl-token accounts
