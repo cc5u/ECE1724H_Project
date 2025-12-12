@@ -2,8 +2,10 @@ use anchor_lang::prelude::*;
 use instructions::*;
 pub mod state;
 pub mod instructions;
+pub mod error;
+pub mod utils;
 
-declare_id!("2Cmtsw7yaqWoaya4Mxc9zXa1GyXWUVevwg2ZXr7oTDxV");
+declare_id!("Ag4VtauT33Q54JioCeAc29ZzbEFAqEfbCPTDq1jjvU2C");
 
 #[program]
 pub mod amm_dex {

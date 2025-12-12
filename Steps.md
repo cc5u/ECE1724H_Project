@@ -6,7 +6,7 @@ solana-test-validator --reset
 
 ### 1.2 Point Solana to localnet
 ```
-solana config set --url http://127.0.0.1:8899`
+solana config set --url http://127.0.0.1:8899
 solana config get
 ```
 
