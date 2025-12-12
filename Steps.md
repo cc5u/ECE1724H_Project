@@ -76,7 +76,7 @@ To check vaults and LP mint
 ```
 solana account <TOKEN_A_VAULT_PUBKEY>
 solana account <TOKEN_B_VAULT_PUBKEY>
-spl-token account-info <LP_MINT_PUBKEY>
+spl-token supply <LP_MINT_PUBKEY>
 ```
 
 # 5. Create ATA account for Token A, B and LP mint

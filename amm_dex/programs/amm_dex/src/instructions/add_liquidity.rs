@@ -15,7 +15,7 @@ pub struct AddLiquidity<'info> {
     /// CHECK: PDA authority
     #[account(
         seeds = [b"pool_authority", pool.key().as_ref()],
-        bump = pool.bump,
+        bump = pool.authority_bump,
     )]
     pub pool_authority: UncheckedAccount<'info>,
 
@@ -136,7 +136,7 @@ pub fn add_liquidity(
     let seeds: &[&[u8]] = &[
         b"pool_authority",
         pool_key.as_ref(),
-        &[pool.bump],
+        &[pool.authority_bump],
     ];
     let signer_seeds = &[seeds];
 

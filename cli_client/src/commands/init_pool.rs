@@ -4,7 +4,7 @@ use std::rc::Rc;
 use anchor_lang::prelude::Pubkey;
 
 use anchor_client::Program;
-use anchor_client::solana_sdk::system_program;
+use solana_system_interface::program;
 use anchor_spl::token as spl_token;
 use amm_dex::accounts as amm_accounts;
 use amm_dex::instruction as amm_ix;
@@ -46,7 +46,7 @@ pub fn cmd_init_pool(
             token_b_vault: token_b_vault.pubkey(),
             lp_mint: lp_mint.pubkey(),
             payer: payer.pubkey(),
-            system_program: system_program::id(),
+            system_program: Pubkey::new_from_array(program::ID.to_bytes()),
             token_program: spl_token::ID,
             rent: anchor_client::solana_sdk::sysvar::rent::id(),
         })
@@ -68,8 +68,6 @@ pub fn cmd_init_pool(
 
     Ok(())
 }
-
-
 
 
 
