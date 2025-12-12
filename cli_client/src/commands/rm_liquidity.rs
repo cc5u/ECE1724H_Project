@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::cli::AddLiquidityArgs;
+use crate::cli::RemoveLiquidityArgs;
 use crate::commands::utils::*;
 
 use amm_dex::{accounts as amm_accounts, instruction as amm_ix};
@@ -12,11 +12,12 @@ use anchor_spl::associated_token::get_associated_token_address;
 use anchor_spl::token as spl_token;
 use anyhow::Result;
 
-pub fn cmd_add_liquidity(
+pub fn cmd_rm_liquidity(
     program: &Program<Rc<Keypair>>,
     payer: &Rc<Keypair>,
-    args: AddLiquidityArgs,
+    args: RemoveLiquidityArgs,
 ) -> Result<()> {
+    let program = program;
     let pool_pubkey = args.pool.parse::<Pubkey>()?;
     let pool = load_pool(program, pool_pubkey)?;
 
@@ -28,7 +29,7 @@ pub fn cmd_add_liquidity(
     let user_token_b = get_associated_token_address(&user, &pool.token_b_mint);
     let user_lp_token = get_associated_token_address(&user, &pool.lp_mint);
 
-    // Fail early with clear instructions if required token accounts are missing.
+    ensure_account_exists(program, &user_lp_token, "User LP token ATA", &pool.lp_mint)?;
     ensure_account_exists(
         program,
         &user_token_a,
@@ -41,37 +42,30 @@ pub fn cmd_add_liquidity(
         "User token B ATA",
         &pool.token_b_mint,
     )?;
-    let lp_ata_ix = maybe_create_lp_ata(program, payer, &user, &user_lp_token, &pool.lp_mint)?;
-    let created_lp_ata = lp_ata_ix.is_some();
 
-    let mut request = program.request();
-    if let Some(ix) = lp_ata_ix {
-        request = request.instruction(ix);
-    }
-
-    let sig = request
-        .accounts(amm_accounts::AddLiquidity {
+    let sig = program
+        .request()
+        .accounts(amm_accounts::RemoveLiquidity {
             pool: pool_pubkey,
             pool_authority,
             token_a_vault: pool.token_a_vault,
             token_b_vault: pool.token_b_vault,
-            user_token_a,
-            user_token_b,
             lp_mint: pool.lp_mint,
             user_lp_token,
+            user_token_a,
+            user_token_b,
             user,
             token_program: spl_token::ID,
         })
-        .args(amm_ix::AddLiquidity {
-            amount_a_desired: args.amount_a,
-            amount_b_desired: args.amount_b,
+        .args(amm_ix::RemoveLiquidity {
+            lp_amount: args.lp_amount,
         })
         .send()?;
 
-    println!("Added liquidity to pool {} tx: {}", pool_pubkey, sig);
-    if created_lp_ata {
-        println!("Created user LP ATA: {}", user_lp_token);
-    }
+    println!(
+        "Removed {} LP from pool {} tx: {}",
+        args.lp_amount, pool_pubkey, sig
+    );
     println!("User token A ATA: {}", user_token_a);
     println!("User token B ATA: {}", user_token_b);
     println!("User LP ATA: {}", user_lp_token);

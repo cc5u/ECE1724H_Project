@@ -34,6 +34,10 @@ fn main() -> anyhow::Result<()> {
         Commands::AddLiquidity(args) => {
             cmd_add_liquidity(&program, &payer, args)?;
         }
+
+        Commands::RemoveLiquidity(args) => {
+            cmd_rm_liquidity(&program, &payer, args)?;
+        }
     }
     Ok(())
 }

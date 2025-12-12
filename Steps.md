@@ -106,3 +106,8 @@ Added liquidity to pool BpzXu9kAxcKVSG7WXjbMEJAkgwAiDKqFZLWKvTuK97eR tx: 2kMYjp5
 User token A ATA: BjgAMsdGhAdFU5QLbwBizWfGffdJdXwYTBqB9FckQDeM
 User token B ATA: 3RCsrA8q6N4imSx1YMoENXWawEofJkmARhtqQ7nqM2hb
 User LP ATA: 76qM3sv9QHUiiWzcj5Z9owcgKZ2gJzERU1xSKg15S7bD
+
+# 7. Remove liquidity and redeem underlying tokens
+```
+cargo run -- --cluster localnet --keypair ~/.config/solana/id.json remove-liquidity --pool <POOL_PUBKEY> --lp-amount 5000
+```

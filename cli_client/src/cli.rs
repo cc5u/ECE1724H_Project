@@ -35,6 +35,14 @@ pub struct AddLiquidityArgs {
     pub amount_b: u64,
 }
 
+#[derive(Args, Debug)]
+pub struct RemoveLiquidityArgs {
+    #[arg(long)]
+    pub pool: String,
+    #[arg(long)]
+    pub lp_amount: u64,
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     // Initialize a new AMM pool
@@ -42,4 +50,7 @@ pub enum Commands {
 
     // Add liquidity to an existing pool
     AddLiquidity(AddLiquidityArgs),
+
+    // Remove liquidity and redeem underlying tokens
+    RemoveLiquidity(RemoveLiquidityArgs),
 }
