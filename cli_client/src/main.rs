@@ -32,8 +32,12 @@ fn main() -> anyhow::Result<()>{
     let program = client.program(amm_dex::id())?;
 
     match cli.command {
-        Commands::InitPool { token_a_mint, token_b_mint, fee_bps } => {
-            cmd_init_pool(&program, &payer, &token_a_mint, &token_b_mint, fee_bps)?;
+        Commands::InitPool(args) => {
+            cmd_init_pool(&program, &payer, args)?;
+        }
+
+        Commands::AddLiquidity(args) => {
+            cmd_add_liquidity(&program, &payer, args)?;
         }
     }
     Ok(())

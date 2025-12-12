@@ -9,16 +9,17 @@ use anchor_spl::token as spl_token;
 use amm_dex::accounts as amm_accounts;
 use amm_dex::instruction as amm_ix;
 
+use crate::cli::*;
+
 pub fn cmd_init_pool(
     program: &Program<Rc<Keypair>>,
     payer: &Rc<Keypair>,
-    token_a_mint_str: &str,
-    token_b_mint_str: &str,
-    fee_bps: u16,
+    args: InitPoolArgs
 ) -> anyhow::Result<()> {
     // parse pubkeys
-    let token_a_mint = token_a_mint_str.parse::<Pubkey>()?;
-    let token_b_mint = token_b_mint_str.parse::<Pubkey>()?;
+    let token_a_mint = args.token_a_mint.parse::<Pubkey>()?;
+    let token_b_mint = args.token_b_mint.parse::<Pubkey>()?;
+    let fee_bps = args.fee_bps;
 
     // derive PDAs
     let (pool_pda, _bump_pool) = Pubkey::find_program_address(

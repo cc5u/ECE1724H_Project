@@ -38,7 +38,6 @@ spl-token create-token
 => Save the printed mint address, e.g. 3ubQ1YYDAa7xr8m2sav1GZnTk3ZjbzNNVUT6zoxqFA3P
 `Token B:  <TOKEN_B_MINT>`
 
-```
 # 3. Run CLI to initialize the pool
 ```
 cargo run -p cli_client -- \
@@ -79,3 +78,30 @@ solana account <TOKEN_A_VAULT_PUBKEY>
 solana account <TOKEN_B_VAULT_PUBKEY>
 spl-token account-info <LP_MINT_PUBKEY>
 ```
+
+# 5. Create ATA account for Token A, B and LP mint
+
+```
+spl-token create-account <MINT_PUBKEY>
+```
+=> save the printed ATA address, e.g. 76qM3sv9QHUiiWzcj5Z9owcgKZ2gJzERU1xSKg15S7bD
+`Creating account <ATA_KEY>  Signature: <SIGNATURE>`
+
+# 6. Run CLI to add liquidity to the pool
+
+add token to user ATA account, run for both token
+```
+spl-token mint <MINT_PUBKEY> 100000000000 <ATA_KEY>
+```
+
+add liquidity
+
+```
+cargo run -- --cluster localnet --keypair ~/.config/solana/id.json add-liquidity --pool <POOL_PUBKEY> --amount-a 1000000000 --amount-b 1000000000
+```
+=> the command line output will be like
+
+Added liquidity to pool BpzXu9kAxcKVSG7WXjbMEJAkgwAiDKqFZLWKvTuK97eR tx: 2kMYjp56kEk9rHy8rvCFSm5e69zcf9pVhoSanhZ8bVw8S44qMuiSoqhayBcFzpkKc2nGbRP7bUfUkxzPfs4xqrkF
+User token A ATA: BjgAMsdGhAdFU5QLbwBizWfGffdJdXwYTBqB9FckQDeM
+User token B ATA: 3RCsrA8q6N4imSx1YMoENXWawEofJkmARhtqQ7nqM2hb
+User LP ATA: 76qM3sv9QHUiiWzcj5Z9owcgKZ2gJzERU1xSKg15S7bD
