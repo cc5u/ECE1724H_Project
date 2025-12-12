@@ -44,7 +44,6 @@ pub struct RemoveLiquidity<'info> {
 }
 
 pub fn remove_liquidity(ctx: Context<RemoveLiquidity>, lp_amount: u64) -> Result<()> {
-    // TODO:
     // 1. Calculate share of reserves (token A + token B) based on lp_amount / total_lp_supply.
     // 2. Burn LP tokens from user (token::burn).
     // 3. Transfer corresponding amounts from vaults back to user (token::transfer).

@@ -5,7 +5,7 @@ pub mod instructions;
 pub mod state;
 pub mod utils;
 
-declare_id!("Ag4VtauT33Q54JioCeAc29ZzbEFAqEfbCPTDq1jjvU2C");
+declare_id!("2Cmtsw7yaqWoaya4Mxc9zXa1GyXWUVevwg2ZXr7oTDxV");
 
 #[program]
 pub mod amm_dex {
@@ -25,5 +25,9 @@ pub mod amm_dex {
 
     pub fn remove_liquidity(ctx: Context<RemoveLiquidity>, lp_amount: u64) -> Result<()> {
         rm_liquidity::remove_liquidity(ctx, lp_amount)
+    }
+
+    pub fn swap(ctx: Context<Swap>, amount_in: u64, minimum_out: u64, is_a_to_b: bool) -> Result<()> {
+        swap::swap(ctx, amount_in, minimum_out, is_a_to_b)
     }
 }
