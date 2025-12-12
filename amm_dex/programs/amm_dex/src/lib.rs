@@ -5,7 +5,7 @@ pub mod instructions;
 pub mod state;
 pub mod utils;
 
-declare_id!("Ag4VtauT33Q54JioCeAc29ZzbEFAqEfbCPTDq1jjvU2C");
+declare_id!("2Cmtsw7yaqWoaya4Mxc9zXa1GyXWUVevwg2ZXr7oTDxV");
 
 #[program]
 pub mod amm_dex {
