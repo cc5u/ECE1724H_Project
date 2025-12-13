@@ -1,4 +1,4 @@
-POOL_PUBKEY=7qeryxM274jkK7K6AnJkrZABv1DiJkBQ9WZKzyL9nngx
+POOL_PUBKEY=FjJHKRbQ1DJnJCHrMLpgYa4TbHbgbgvmdrfCRFeUNEgW
 
 cd cli_client
 echo "=== Pool Inspection ==="

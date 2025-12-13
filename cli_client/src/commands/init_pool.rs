@@ -5,6 +5,7 @@ use anchor_lang::prelude::Pubkey;
 
 use amm_dex::accounts as amm_accounts;
 use amm_dex::instruction as amm_ix;
+use amm_dex::state::PoolCounter;
 use anchor_client::Program;
 use anchor_spl::token as spl_token;
 use solana_system_interface::program;
@@ -21,9 +22,26 @@ pub fn cmd_init_pool(
     let token_b_mint = args.token_b_mint.parse::<Pubkey>()?;
     let fee_bps = args.fee_bps;
 
+    // derive counter PDA for this token pair
+    let (pool_counter_pda, _counter_bump) = Pubkey::find_program_address(
+        &[b"pool_counter", token_a_mint.as_ref(), token_b_mint.as_ref()],
+        &program.id(),
+    );
+
+    // fetch current next_id; default to 0 if counter doesn't exist yet
+    let pool_id = match program.account::<PoolCounter>(pool_counter_pda) {
+        Ok(counter) => counter.next_id,
+        Err(_) => 0,
+    };
+
     // derive PDAs
     let (pool_pda, _bump_pool) = Pubkey::find_program_address(
-        &[b"pool", token_a_mint.as_ref(), token_b_mint.as_ref()],
+        &[
+            b"pool",
+            token_a_mint.as_ref(),
+            token_b_mint.as_ref(),
+            &pool_id.to_le_bytes(),
+        ],
         &program.id(),
     );
     let (pool_authority, _bump_auth) =
@@ -39,6 +57,7 @@ pub fn cmd_init_pool(
         .request()
         .accounts(amm_accounts::InitializePool {
             pool: pool_pda,
+            pool_counter: pool_counter_pda,
             pool_authority,
             token_a_mint,
             token_b_mint,
@@ -57,6 +76,8 @@ pub fn cmd_init_pool(
         .send()?;
 
     println!("Initialized pool {} tx: {}", pool_pda, tx);
+    println!("Pool ID           : {pool_id}");
+    println!("Pool counter PDA  : {pool_counter_pda}");
     println!("Pool PDA          : {pool_pda}");
     println!("Pool authority PDA: {pool_authority}");
     println!("Token A mint      : {token_a_mint}");

@@ -1,6 +1,6 @@
 # Pass the Token A and B mint addresses to initilaize
-TOKEN_A=3rMeVm1gaVmnzxU1rLWTgX6nn5z4GvZJybLcxKWN82Sg
-TOKEN_B=99nkHKhzxNLne7Yr9jhxkzmjav4ZDxNNZtzvT18VCNWo
+TOKEN_A=9tCwG6of3tAjpDcV7VpG5tjo9RgKGcwfbjWHcinGQuda
+TOKEN_B=3aM2Jy4edDiVhD5i7K7V7ZjfXiVjm7zrnFDWvg46VT6d
 cd cli_client
 echo "=== Initializing Pool ==="
 cargo run -p cli_client -- \
