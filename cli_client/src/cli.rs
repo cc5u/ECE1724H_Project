@@ -56,9 +56,12 @@ pub struct SwapArgs {
 }
 
 #[derive(Args, Debug)]
-pub struct InspectPoolArgs{
+pub struct ShowingDexArgs {}
+
+#[derive(Args, Debug)]
+pub struct InspectPoolArgs {
     #[arg(long)]
-    pub pool: String
+    pub pool: String,
 }
 
 #[derive(Subcommand, Debug)]
@@ -77,4 +80,8 @@ pub enum Commands {
 
     // Inspect info of the pool
     InspectPool(InspectPoolArgs),
+
+    // Show all pools managed by the program
+    // #[command(name = "showing_dex")]
+    ShowingDex(ShowingDexArgs),
 }

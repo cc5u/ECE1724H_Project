@@ -1,4 +1,4 @@
-POOL_PUBKEY=FjJHKRbQ1DJnJCHrMLpgYa4TbHbgbgvmdrfCRFeUNEgW
+POOL_PUBKEY=9is954T9eDx1yDKaP3gqo1VKrAg5gjRSFj9p9krZFXuy
 
 cd cli_client
 echo "=== Swap Token (A -> B) ==="
@@ -8,8 +8,7 @@ cargo run -- \
     swap \
     --pool "$POOL_PUBKEY" \
     --amount-in 1000000000 \
-    --minimum-out 9000000 \
-    --is-a-to-b
+    --minimum-out 9000000
 echo ""
 echo "=== User ATA Accounts ==="
 spl-token accounts

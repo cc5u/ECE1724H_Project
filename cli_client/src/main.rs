@@ -46,6 +46,10 @@ fn main() -> anyhow::Result<()> {
         Commands::InspectPool(args) => {
             cmd_inspect_pool(&program, args)?;
         }
+
+        Commands::ShowingDex(args) => {
+            cmd_showing_dex(&program, args)?;
+        }
     }
     Ok(())
 }

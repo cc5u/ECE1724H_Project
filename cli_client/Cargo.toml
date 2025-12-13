@@ -14,3 +14,5 @@ amm_dex = { path = "../amm_dex/programs/amm_dex", features = ["no-entrypoint"] }
 anyhow = "1.0.100"
 shellexpand = "3.1.1"
 solana-system-interface = "3.0.0"
+colored = "3.0.0"
+comfy-table = "7.2.1"
