@@ -5,6 +5,9 @@ pub enum AmmError {
     #[msg("Insufficient output amount for the requested swap.")]
     InsufficientOutputAmount,
 
+    #[msg("Pool has insufficient liquidity for this swap.")]
+    InsufficientLiquidity,
+
     #[msg("Cannot add liquidity with zero LP supply and zero amounts.")]
     InvalidInitialLiquidity,
 
