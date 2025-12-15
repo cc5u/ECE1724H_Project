@@ -64,6 +64,9 @@ pub struct InspectPoolArgs {
     pub pool: String,
 }
 
+#[derive(Args, Debug)]
+pub struct WalletArgs {}
+
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     // Initialize a new AMM pool
@@ -84,4 +87,7 @@ pub enum Commands {
     // Show all pools managed by the program
     // #[command(name = "showing_dex")]
     ShowingDex(ShowingDexArgs),
+
+    // Show wallet SOL and token balances
+    Wallet(WalletArgs),
 }

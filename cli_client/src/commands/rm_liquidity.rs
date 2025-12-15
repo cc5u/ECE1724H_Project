@@ -63,7 +63,7 @@ pub fn cmd_rm_liquidity(
         .send()?;
 
     println!(
-        "Removed {} LP from pool {} tx: {}",
+        "Removed {} LP from pool\n{} tx: {}",
         args.lp_amount, pool_pubkey, sig
     );
     println!("User token A ATA: {}", user_token_a);

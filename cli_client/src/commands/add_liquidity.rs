@@ -68,7 +68,7 @@ pub fn cmd_add_liquidity(
         })
         .send()?;
 
-    println!("Added liquidity to pool {} tx: {}", pool_pubkey, sig);
+    println!("Added liquidity to pool {}\ntx: {}", pool_pubkey, sig);
     if created_lp_ata {
         println!("Created user LP ATA: {}", user_lp_token);
     }

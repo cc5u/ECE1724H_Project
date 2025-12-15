@@ -56,7 +56,7 @@ pub fn cmd_swap(program: &Program<Rc<Keypair>>, payer: &Rc<Keypair>, args: SwapA
         .send()?;
 
     println!(
-        "Swap {} complete. Pool: {}, tx: {}",
+        "Swap {} complete.\nPool: {}\ntx: {}",
         direction_label, pool_pubkey, sig
     );
     println!("Source ATA: {}", user_source);

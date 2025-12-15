@@ -3,11 +3,12 @@ mod commands;
 
 use crate::cli::*;
 use crate::commands::*;
+use anchor_client::solana_sdk::signer::Signer;
 use clap::Parser;
-
 use anchor_client::{Client, Cluster};
 
 use anchor_client::solana_sdk::signature::read_keypair_file;
+use colored::Colorize;
 use std::rc::Rc;
 use std::io::{stdin, stdout, Write};
 
@@ -43,20 +44,60 @@ fn main() -> anyhow::Result<()> {
             Commands::Swap(args) => cmd_swap(&program, &payer, args)?,
             Commands::InspectPool(args) => cmd_inspect_pool(&program, args)?,
             Commands::ShowingDex(args) => cmd_showing_dex(&program, args)?,
+            Commands::Wallet(_) => cmd_wallet(&program)?,
         }
         return Ok(());
     }
 
     // Interactive menu loop
     loop {
-        println!("\nInteractive AMM DEX CLI — choose an option:");
-        println!("1) InitPool");
-        println!("2) AddLiquidity");
-        println!("3) RemoveLiquidity");
-        println!("4) Swap");
-        println!("5) InspectPool");
-        println!("6) ShowingDex");
-        println!("q) Quit");
+
+        let balance_lamports = match program.rpc().get_balance(&payer.pubkey()) {
+            Ok(l) => l,
+            Err(e) => {
+                eprintln!("Failed to fetch balance: {}", e);
+                0
+            }
+        };
+        let balance_sol = (balance_lamports as f64) / 1_000_000_000.0;
+
+        // Build menu lines
+        let wallet_line = format!("Wallet: {}", keypair_path);
+        let balance_line = format!("Balance: {:.6} SOL", balance_sol);
+        let menu_lines = [
+            "1) InitPool".normal(),
+            "2) AddLiquidity".normal(),
+            "3) RemoveLiquidity".normal(),
+            "4) Swap".normal(),
+            "5) InspectPool".normal(),
+            "6) ShowingDex".normal(),
+            "7) Wallet (SOL + tokens)".normal(),
+            "q) Quit".red(),
+            " ".normal(),
+        ];
+
+        // Determine box width from the longest line
+        let title = " Interactive AMM DEX CLI ".green();
+        let mut width = title.len().max(wallet_line.len()).max(balance_line.len());
+        for l in menu_lines.iter() {
+            width = width.max(l.len());
+        }
+
+        let border = "=".repeat(width);
+        let pad = width.saturating_sub(title.len());
+        let left = pad / 2;
+        let right = pad.saturating_sub(left);
+        let title_line = format!("{}{}{}", "-".repeat(left), title, "-".repeat(right));
+
+        println!("\n{}", border);
+        println!("{}", title_line);
+        println!("{}", border);
+        println!("{}", wallet_line);
+        println!("{}", balance_line);
+        println!("\n- choose an option:");
+        for l in menu_lines.iter() {
+            println!("{}", l);
+        }
 
         let choice = read_input("> ");
         match choice.as_str() {
@@ -138,6 +179,12 @@ fn main() -> anyhow::Result<()> {
                 let args = ShowingDexArgs {};
                 if let Err(e) = cmd_showing_dex(&program, args) {
                     eprintln!("ShowingDex error: {}", e);
+                }
+            }
+
+            "7" => {
+                if let Err(e) = cmd_wallet(&program) {
+                    eprintln!("Wallet error: {}", e);
                 }
             }
 

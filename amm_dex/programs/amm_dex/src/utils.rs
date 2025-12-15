@@ -18,7 +18,7 @@ pub fn get_amount_out(
     reserve_out: u64,
     fee_bps: u16,
 ) -> Result<u64> {
-    // Graceful message when the pool has no liquidity yet
+    // Message when the pool has no liquidity yet
     require!(
         reserve_in > 0 && reserve_out > 0,
         AmmError::InsufficientLiquidity

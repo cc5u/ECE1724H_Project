@@ -66,10 +66,9 @@ pub fn cmd_showing_dex(
         table.add_row(vec!["LP supply".to_string(), lp_supply.to_string()]);
         table.add_row(vec!["Fee (bps)".to_string(), pool.fee_bps.to_string()]);
         table.add_row(vec![
-            "Price A/B".to_string(),
-            price
-                .map(|p| format!("{:.6}", p))
-                .unwrap_or_else(|| "N/A (zero balance)".to_string()),
+        "Price A/B".to_string(),
+        price.map(|p| format!("{:.6}", p))
+            .unwrap_or_else(|| "N/A (zero balance)".to_string()),
         ]);
 
         println!("{table}\n");

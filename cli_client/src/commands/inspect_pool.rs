@@ -26,35 +26,6 @@ pub fn cmd_inspect_pool(
         None
     };
 
-    // println!("Pool: {}", pool_pubkey);
-    // println!("========================================");
-    // println!("Token A mint  : {}", pool.token_a_mint);
-    // println!(
-    //     "Token A vault : {} (balance: {})",
-    //     pool.token_a_vault,
-    //     &token_a_balance
-    // );
-    // println!("========================================");
-    // println!("Token B mint  : {}", pool.token_b_mint);
-    
-    // println!(
-    //     "Token B vault : {} (balance: {})",
-    //     pool.token_b_vault,
-    //     &token_b_balance
-    // );
-    // println!("========================================");
-    // println!("LP mint       : {}", pool.lp_mint);
-    // println!(
-    //     "LP supply     : {}",
-    //     &lp_supply,
-    // );
-    // println!("Fee (bps)     : {}", pool.fee_bps);
-    // if price > 0.0 {
-    //     println!("Price A/B     : {:.6}", price);
-    // } else {
-    //     println!("Price A/B     : N/A (zero balance)");
-    // }
-
     let mut table = Table::new();
     // Use full ASCII borders so each table is bounded top and bottom.
     table.load_preset(ASCII_FULL);
