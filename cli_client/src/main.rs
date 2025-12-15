@@ -78,7 +78,7 @@ fn main() -> anyhow::Result<()> {
 
         // Determine box width from the longest line
         let title = " Interactive AMM DEX CLI ".green();
-        let mut width = title.len().max(wallet_line.len()).max(balance_line.len());
+        let mut width = title.len() + 40;
         for l in menu_lines.iter() {
             width = width.max(l.len());
         }

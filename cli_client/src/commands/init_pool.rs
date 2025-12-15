@@ -75,7 +75,7 @@ pub fn cmd_init_pool(
         .signer(&lp_mint)
         .send()?;
 
-    println!("Initialized pool {} tx: {}", pool_pda, tx);
+    println!("Initialized pool {} \ntx: {}", pool_pda, tx);
     println!("Pool ID           : {pool_id}");
     println!("Pool counter PDA  : {pool_counter_pda}");
     println!("Pool PDA          : {pool_pda}");
