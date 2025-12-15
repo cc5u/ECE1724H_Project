@@ -1,6 +1,5 @@
 use crate::error::AmmError;
 use crate::state::*;
-use crate::utils::*;
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, Token, TokenAccount, Transfer};
@@ -66,9 +65,23 @@ pub fn remove_liquidity(ctx: Context<RemoveLiquidity>, lp_amount: u64) -> Result
 
     require!(total_lp_supply > 0, AmmError::InvalidLpSupply);
 
-    // User's share
-    let amount_a = checked_div(checked_mul(lp_amount, reserve_a)?, total_lp_supply)?;
-    let amount_b = checked_div(checked_mul(lp_amount, reserve_b)?, total_lp_supply)?;
+    let lp_u128 = lp_amount as u128;
+    let reserve_a_u128 = reserve_a as u128;
+    let reserve_b_u128 = reserve_b as u128;
+    let total_lp_u128 = total_lp_supply as u128;
+
+    // User's share: amount = lp_amount / total_lp * reserve
+    let amount_a_u128 = lp_u128
+        .checked_mul(reserve_a_u128)
+        .and_then(|n| n.checked_div(total_lp_u128))
+        .ok_or(AmmError::MathOverflow)?;
+    let amount_b_u128 = lp_u128
+        .checked_mul(reserve_b_u128)
+        .and_then(|n| n.checked_div(total_lp_u128))
+        .ok_or(AmmError::MathOverflow)?;
+
+    let amount_a = u64::try_from(amount_a_u128).map_err(|_| AmmError::MathOverflow)?;
+    let amount_b = u64::try_from(amount_b_u128).map_err(|_| AmmError::MathOverflow)?;
 
     // Burn LP from user
     let cpi_accounts_burn = Burn {

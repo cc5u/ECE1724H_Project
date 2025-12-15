@@ -1,6 +1,5 @@
 use crate::error::AmmError;
 use crate::state::*;
-use crate::utils::*;
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount, Transfer};
@@ -80,23 +79,39 @@ pub fn add_liquidity(
         );
 
         // Simple LP valuation: lp = amount_a + amount_b
-        let lp_amount = amount_a_desired
-            .checked_add(amount_b_desired)
+        let lp_amount_u128 = (amount_a_desired as u128)
+            .checked_add(amount_b_desired as u128)
             .ok_or(AmmError::MathOverflow)?;
+        let lp_amount = u64::try_from(lp_amount_u128).map_err(|_| AmmError::MathOverflow)?;
 
         (amount_a_desired, amount_b_desired, lp_amount)
     } else {
         // Subsequent liquidity providers must add proportional to current reserves
         require!(reserve_a > 0 && reserve_b > 0, AmmError::MathOverflow);
 
+        let reserve_a_u128 = reserve_a as u128;
+        let reserve_b_u128 = reserve_b as u128;
+        let amount_a_desired_u128 = amount_a_desired as u128;
+        let amount_b_desired_u128 = amount_b_desired as u128;
+        let total_lp_u128 = total_lp_supply as u128;
+
         // Compute optimal B given A
-        let amount_b_optimal = checked_div(checked_mul(amount_a_desired, reserve_b)?, reserve_a)?;
+        let amount_b_optimal_u128 = amount_a_desired_u128
+            .checked_mul(reserve_b_u128)
+            .and_then(|n| n.checked_div(reserve_a_u128))
+            .ok_or(AmmError::MathOverflow)?;
+        let amount_b_optimal =
+            u64::try_from(amount_b_optimal_u128).map_err(|_| AmmError::MathOverflow)?;
         let (amount_a, amount_b) = if amount_b_optimal <= amount_b_desired {
             (amount_a_desired, amount_b_optimal)
         } else {
             // Use B as the limiting factor
+            let amount_a_optimal_u128 = amount_b_desired_u128
+                .checked_mul(reserve_a_u128)
+                .and_then(|n| n.checked_div(reserve_b_u128))
+                .ok_or(AmmError::MathOverflow)?;
             let amount_a_optimal =
-                checked_div(checked_mul(amount_b_desired, reserve_a)?, reserve_b)?;
+                u64::try_from(amount_a_optimal_u128).map_err(|_| AmmError::MathOverflow)?;
             (amount_a_optimal, amount_b_desired)
         };
 
@@ -104,8 +119,18 @@ pub fn add_liquidity(
         //   amount_a * total_lp / reserve_a,
         //   amount_b * total_lp / reserve_b
         // )
-        let lp_from_a = checked_div(checked_mul(amount_a, total_lp_supply)?, reserve_a)?;
-        let lp_from_b = checked_div(checked_mul(amount_b, total_lp_supply)?, reserve_b)?;
+        let lp_from_a_u128 = (amount_a as u128)
+            .checked_mul(total_lp_u128)
+            .and_then(|n| n.checked_div(reserve_a_u128))
+            .ok_or(AmmError::MathOverflow)?;
+        let lp_from_b_u128 = (amount_b as u128)
+            .checked_mul(total_lp_u128)
+            .and_then(|n| n.checked_div(reserve_b_u128))
+            .ok_or(AmmError::MathOverflow)?;
+        let lp_from_a =
+            u64::try_from(lp_from_a_u128).map_err(|_| AmmError::MathOverflow)?;
+        let lp_from_b =
+            u64::try_from(lp_from_b_u128).map_err(|_| AmmError::MathOverflow)?;
         let lp_to_mint = lp_from_a.min(lp_from_b);
 
         (amount_a, amount_b, lp_to_mint)

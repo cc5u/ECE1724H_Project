@@ -160,7 +160,7 @@ fn main() -> anyhow::Result<()> {
                     Ok(v) => v,
                     Err(_) => { eprintln!("Invalid minimum_out"); continue; }
                 };
-                let is_a_to_b = matches!(dir.to_lowercase().as_str(), "y" | "n" );
+                let is_a_to_b = matches!(dir.trim().to_lowercase().as_str(), "y");
                 let args = SwapArgs { pool, amount_in: a_in, minimum_out: min_out, is_a_to_b };
                 if let Err(e) = cmd_swap(&program, &payer, args) {
                     eprintln!("Swap error: {}", e);
