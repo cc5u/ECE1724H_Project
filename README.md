@@ -1,151 +1,126 @@
-# Project Proposal
-## Motivation
+# Final Report
+Team members information:
 
+Chen, Yuanhan |            |
+
+Wu, Chia-Chun | 1012134101 | chiachun910711@gmail.com
+
+## Motivation
 Blockchain technology has been popular in recent years, especially within decentralized finance (DeFi). Smart contracts in DeFi enable transparent, autonomous, and trustless financial transactions by executing predetermined rules without intermediaries. However, the complexity and immutability of smart contracts mean that vulnerabilities or inefficiencies can lead to substantial financial losses, as evidenced by several high-profile DeFi exploits in recent years. To address these challenges, developers are increasingly turning to safer and more performant programming languages like Rust to enhance the reliability and robustness of blockchain applications.
 
 Rust is known for its memory safety guarantees, strong support for concurrency, and high-performance execution. These features have made Rust a language of choice for building secure and performant blockchain platforms. Major blockchains like Solana use Rust to implement smart contracts, enhancing code correctness and execution efficiency. Despite Rust's rising prominence in blockchain core development, there remains a noticeable gap in end-to-end projects that integrate both on-chain smart contract logic and off-chain client applications entirely in Rust. We found that established Solana DEXs (e.g., Raydium, Orca, Meteora) typically implement client components in TypeScript or Python. This gap presents an opportunity to explore cohesive Rust-based decentralized application stacks.
 
-Motivated by this gap, our team aims to develop an Automated Market Maker (AMM) decentralized exchange on Solana, complemented by a Rust-based command-line wallet and autonomous trading agent. This project excites us as it challenges us to apply Rust across the entire stack, from smart contract development to client interaction, while deepening our understanding of decentralized trading mechanisms and secure blockchain systems.
+Motivated by this gap, our team aims to develop an Automated Market Maker (AMM) decentralized exchange on Solana, complemented by a Rust-based command-line wallet. This project excites us as it challenges us to apply Rust across the entire stack, from smart contract development to client interaction, while deepening our understanding of decentralized trading mechanisms and secure blockchain systems.
 
----
-## Objectives and Key Features
-**Objective**
+## Objectives
+We aim to design and implement a small-scale, fully functional AMM decentralized exchange (DEX) on the Solana blockchain using Rust. This will be accompanied by a Rust-based command-line wallet interface. The system will enable users to:
 
-We aim to design and implement a small-scale, fully functional AMM decentralized exchange (DEX) on the Solana blockchain using Rust. This will be accompanied by a Rust-based autonomous trading agent and a command-line wallet interface. The system will enable users to:
 * Initialize new token pools.
-* Provide or remove liquidity.
+* Provide (Deposit) Liquidity to the pools.
+* Remove (Withdraw) Liquidity to the pools.
 * Swap tokens through pools.
-* Authorize an automated agent to perform trades or rebalance liquidity based on predefined strategies.
+* Inspect the pool status
+* Get all pools information on our AMM Dex
 
-The final product will demonstrate a comprehensive decentralized financial application built entirely in Rust, showcasing cohesive on-chain smart contract design and off-chain automation within one ecosystem.
-
-**Key Features**
-
-1. AMM Smart Contract (On-Chain Program)
-
-* Implemented in Rust using the Anchor framework.
-* Employs the constant-product pricing formula ($\text {x×y=k}$) for token swaps.
-* Core functions:
-    * `initialize_pool()` — create token pair pools.
-    * `add_liquidity()` / `remove_liquidity()` — deposit or withdraw assets in exchange for LP tokens.
-    * `swap()` — execute token swaps with slippage protection and transaction fees.
-* Emits structured events for activity tracking.
-* Includes security measures such as overflow checks, signer verification, and account ownership validation
-
- 
-2. Command-Line Interface (CLI) Wallet
-- Developed in Rust using `clap` and `solana-client` libraries.
-- Enables users to:
-    * Create and manage pools.
-    * Add or remove liquidity.
-    * Execute token swaps.
-    * Inspect on-chain pool states and transaction history.
-    * Supports local Solana test validator and Solana devnet operation.
+The final product will demonstrate a comprehensive decentralized financial application built entirely in Rust, showcasing cohesive on-chain smart contract design and off-chain CLI within one ecosystem.
 
 
-3. Rust Agent (Autonomous Off-Chain Executor)
-- A continuously running daemon implemented with Rust’s async ecosystem (tokio and axum).
-- Connects to Solana RPC to fetch pool states and market data.
-- Executes predefined trading strategies, such as:
-    - Band Market-Making — automatic buy/sell within target price ranges.
-    - Arbitrage Simulation — detect price deviations and rebalance liquidity.
-- Integrates risk controls, including per-trade/daily limits, slippage thresholds, and whitelist filters.
-- Supports HTTP-based pause/resume controls.
-- Interfaces with the CLI wallet for authorization and real-time monitoring.
+We proposed an automated trading agent in our project proposal; however, we are not able to complete it as a two member group. Nevertheless, we did some research and have learned two trading strategies that can use in the market. These strategies will be delivered in the **Lessons learned and concluding remarks** section.
 
-**Architecture and Code Organization**
 
-Our current idea of the entire project architecture is shown below:
+## Features
+### Automated Market Maker – Decentralized Exchange
 
-```
-project-root/
-├─ amm_dex/        # Anchor smart contract
-├─ cli/            # Rust CLI wallet
-├─ agent/          # Rust daemon for strategy automation
-├─ tests/          # Integration and stress tests
-└─ README.md       # Documentation and project proposal
-```
+This project delivers a fully functional Automated Market Maker (AMM) decentralized exchange implemented as an on-chain Solana program using **Rust** and the **Anchor framework**. The AMM follows a **constant-product liquidity model** and supports core decentralized exchange operations.
 
----
-## Tentative Plan
+#### Pool Initialization and PoolCounter
 
-Below is our 10-week plan (Oct 6 – Dec 14) for designing, implementing, and testing the Solana AMM DEX, organized into four development phases.
+* Supports permissionless creation of new liquidity pools for arbitrary SPL token pairs.
+* Each pool is associated with a dedicated on-chain Pool account that stores:
+    * Token mint addresses.
+    * Vault token accounts.
+    * LP token mint.
+    * Fee parameters.
+    * PDA bump values.
+* A global PoolCounter account is maintained to track the total number of pools created by the program.
 
-### Phase 1, Environment Setup and Smart Contract Core (Weeks 1–3)
+#### PoolCounter Functionality
 
-- Set up Solana toolchain and Anchor framework.  
-- Define pool data structures and PDA accounts.  
-- Implement core AMM logic (pool initialization, liquidity management, swap formula).  
-- Write comprehensive unit and integration tests using `solana-program-test`.  
-- Deploy and verify program on Solana devnet.
+PoolCounter is a program-owned account that stores a monotonically increasing counter.
 
-**Deliverables:**
+Each time a new pool is initialized:
 
-- `amm_dex` program compiled and deployed on devnet.  
--  Local swap and liquidity transactions verified by test suite.
+* The counter is incremented.
+* The current counter value can be used as a unique pool identifier or index.
 
----
-### Phase 2 – CLI Wallet Interface (Weeks 4–5)
+This mechanism enables:
+* Deterministic enumeration of pools.
+* Lightweight indexing for off-chain clients and trading agents.
+* Cleaner integration with analytics, monitoring, and future registry-style features.
 
-- Implement Rust CLI using `clap` and `solana-client`.  
-- Add command set: `create-pool`, `add-liq`, `remove-liq`, `swap`, `show-pool`, `approve-agent`, `revoke-agent`.  
-- Connect CLI to devnet program ID for live interaction.  
-- Provide usage documentation and demo scripts.
+By separating pool metadata (`Pool`) from global program state (`PoolCounter`), the design remains modular and extensible while avoiding the need for expensive on-chain scans.
 
-**Deliverables:**
+### Liquidity Provision and Withdrawal
 
-- Fully functional CLI supporting all major program instructions.  
-- Example demo: initialize pool → add liquidity → perform swap → display results.
+The AMM supports permissionless liquidity provision and withdrawal through a standardized LP (liquidity provider) token mechanism. Liquidity providers contribute pairs of SPL tokens to a pool and receive LP tokens that represent proportional ownership of the pool’s reserves.
 
----
-### Phase 3 – Autonomous Rust Agent (Weeks 6–8)
+**Adding Liquidity**
 
-- Build background service (`agent/`) using `tokio` async runtime.  
-- Implement market snapshot polling and feature extraction from pool accounts.  
-- Integrate simple decision logic (“band market-making” strategy).  
-- Execute on-chain transactions through the CLI wallet’s authorized keypair.  
-- Add control endpoints (`/pause`, `/resume`, `/status`).
+Users add liquidity by depositing both assets of the pool (Token A and Token B) into the pool’s vault accounts. Deposits are transferred from the user’s associated token accounts (ATAs) into the pool-controlled vaults via CPI calls to the SPL Token program.
 
-**Deliverables:**
+Liquidity provisioning follows two distinct cases:
 
-- Rust daemon continuously trading on the deployed pool.  
-- Configurable parameters (`agent.toml`): thresholds, limits, polling interval.  
-- Logged trade summaries with transaction hashes on devnet.
+**Initial Liquidity Provision**
 
----
-### Phase 4 – Testing, Safety, and Documentation (Weeks 9–10)
+When a pool is first created and has no existing LP supply, the initial liquidity provider:
 
-- Validate numerical correctness (swap price, liquidity accounting, fee distribution).  
-- Run stability tests with simulated RPC disconnections and transaction retries.  
-- Finalize README and architecture diagrams.  
-- Record short demo video showing:
-  1. Pool creation via CLI  
-  2. Manual trade execution  
-  3. Agent automatic trading behavior  
-  4. Pool state evolution over time  
+* Defines the initial reserve ratio between Token A and Token B.
 
-**Deliverables:**
+* Receives an initial LP token supply minted by the program.
 
-- Repository with reproducible setup instructions.  
-- Comprehensive documentation, including design rationale and limitations.  
-- Polished demo ready for presentation and submission.
+The LP mint authority is held by a program-derived pool authority (PDA), ensuring that LP issuance is strictly controlled on-chain.
 
----
-### **Division of Responsibilities**
+**Subsequent Liquidity Provision**
 
-|**Component**|**Chia-Chun Wu**|**Yuanhan Chen**|
-|---|---|---|
-|**Solana Program (Anchor)**|Implement pool initialization and liquidity management logic; write unit tests for program modules.|Implement swap and fee logic; handle PDA account structure and integration testing.|
-|**CLI Wallet (Rust + clap)**|Build command-line parsing and transaction submission flow.|Implement response handling, result formatting, and CLI documentation.|
-|**Autonomous Trading Agent**|Develop async data polling, configuration system, and status control endpoints.|Implement trading decision logic, transaction execution, and performance logging.|
-|**Testing & Integration**|Design automated test scripts and continuous integration workflow.|Conduct functional and stress testing with simulated RPC failures; analyze results.|
-|**Documentation & Presentation**|Create architecture diagrams, system overview, and setup guide.|Write README usage examples, prepare demo scripts, and edit final video.|
+For an existing pool, the program enforces proportional deposits relative to current reserves.
 
-**Collaboration Approach**
+The amount of LP tokens minted is calculated based on the user’s contribution relative to total pool liquidity, ensuring fairness and preserving ownership proportions. Any deviation from the required ratio is handled deterministically by the program logic, preventing reserve imbalance.
 
-- Both developers contribute equally across all subsystems, with distinct but complementary tasks.
-- Tasks are coordinated through weekly syncs and code reviews to ensure full knowledge sharing.
-- Each developer will rotate to review the other’s code to maintain consistency and shared understanding.
+All LP tokens are minted directly to the user’s LP associated token account, and the pool itself never holds LP tokens.
 
----
+#### Removing Liquidity
 
+Users remove liquidity by burning LP tokens from their own LP token account. The number of LP tokens burned determines the user’s fractional share of the pool.
+
+Based on this share, the program computes the exact amounts of Token A and Token B owed to the user. Assets are transferred from the pool’s vaults back to the user’s ATAs using PDA-authorized CPI transfers.
+
+This mechanism guarantees that:
+
+* Users always receive assets proportional to their ownership.
+* Pool reserves and LP supply remain internally consistent after each withdrawal.
+
+#### Invariants and Safety Properties
+
+1. The pool’s reserves and LP supply maintain consistent proportional relationships across all liquidity operations.
+2. Vault token accounts are owned by a pool authority PDA, preventing unauthorized withdrawals.
+3. LP minting and burning can only be performed by the program via PDA-signed instructions.
+4. Arithmetic operations are checked to prevent overflow and invalid state transitions.
+5. Liquidity operations cannot be executed with invalid accounts, mismatched mints, or unauthorized signers.
+
+This design ensures that liquidity provision and withdrawal are fair, deterministic, and secure, while remaining fully compatible with standard SPL token tooling and off-chain clients.
+
+
+
+## User’s (or Developer’s) Guide
+
+## Reproducibility Guide:
+
+## Contrubution
+
+## Lessons learned and concluding remarks:
+
+
+## References
+1. https://github.com/raydium-io/raydium-amm/tree/master
+2. https://github.com/alphaengine9/Market-Maker-Framework/tree/main
+3. https://www.anchor-lang.com/docs
