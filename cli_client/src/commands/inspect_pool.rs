@@ -1,4 +1,5 @@
 use anchor_client::solana_sdk::signature::{Keypair};
+use comfy_table::{presets::ASCII_FULL, ContentArrangement, Table};
 use std::rc::Rc;
 
 use anchor_lang::prelude::Pubkey;
@@ -20,38 +21,67 @@ pub fn cmd_inspect_pool(
     let lp_supply = program.rpc().get_token_supply(&pool.lp_mint)?.ui_amount.ok_or(anyhow::anyhow!("No UI amount for LP mint"))?;
 
     let price = if token_b_balance > 0.0 {
-        token_a_balance / token_b_balance
+       Some(token_a_balance / token_b_balance)
     } else {
-        0.0
+        None
     };
 
-    println!("Pool: {}", pool_pubkey);
-    println!("========================================");
-    println!("Token A mint  : {}", pool.token_a_mint);
-    println!(
-        "Token A vault : {} (balance: {})",
-        pool.token_a_vault,
-        &token_a_balance
-    );
-    println!("========================================");
-    println!("Token B mint  : {}", pool.token_b_mint);
+    // println!("Pool: {}", pool_pubkey);
+    // println!("========================================");
+    // println!("Token A mint  : {}", pool.token_a_mint);
+    // println!(
+    //     "Token A vault : {} (balance: {})",
+    //     pool.token_a_vault,
+    //     &token_a_balance
+    // );
+    // println!("========================================");
+    // println!("Token B mint  : {}", pool.token_b_mint);
     
-    println!(
-        "Token B vault : {} (balance: {})",
-        pool.token_b_vault,
-        &token_b_balance
-    );
-    println!("========================================");
-    println!("LP mint       : {}", pool.lp_mint);
-    println!(
-        "LP supply     : {}",
-        &lp_supply,
-    );
-    println!("Fee (bps)     : {}", pool.fee_bps);
-    if price > 0.0 {
-        println!("Price A/B     : {:.6}", price);
-    } else {
-        println!("Price A/B     : N/A (zero balance)");
-    }
+    // println!(
+    //     "Token B vault : {} (balance: {})",
+    //     pool.token_b_vault,
+    //     &token_b_balance
+    // );
+    // println!("========================================");
+    // println!("LP mint       : {}", pool.lp_mint);
+    // println!(
+    //     "LP supply     : {}",
+    //     &lp_supply,
+    // );
+    // println!("Fee (bps)     : {}", pool.fee_bps);
+    // if price > 0.0 {
+    //     println!("Price A/B     : {:.6}", price);
+    // } else {
+    //     println!("Price A/B     : N/A (zero balance)");
+    // }
+
+    let mut table = Table::new();
+    // Use full ASCII borders so each table is bounded top and bottom.
+    table.load_preset(ASCII_FULL);
+    table.set_content_arrangement(ContentArrangement::Dynamic);
+    table.set_header(vec!["Field", "Value"]);
+    table.add_row(vec!["Pool account".to_string(), pool_pubkey.to_string()]);
+    table.add_row(vec!["Pool ID".to_string(), pool.pool_id.to_string()]);
+    table.add_row(vec!["Token A mint".to_string(), pool.token_a_mint.to_string()]);
+    table.add_row(vec![
+        "Token A vault".to_string(),
+        format!("{} (balance: {})", pool.token_a_vault, token_a_balance),
+    ]);
+    table.add_row(vec!["Token B mint".to_string(), pool.token_b_mint.to_string()]);
+    table.add_row(vec![
+        "Token B vault".to_string(),
+        format!("{} (balance: {})", pool.token_b_vault, token_b_balance),
+    ]);
+    table.add_row(vec!["LP mint".to_string(), pool.lp_mint.to_string()]);
+    table.add_row(vec!["LP supply".to_string(), lp_supply.to_string()]);
+    table.add_row(vec!["Fee (bps)".to_string(), pool.fee_bps.to_string()]);
+    table.add_row(vec![
+        "Price A/B".to_string(),
+        price.map(|p| format!("{:.6}", p))
+            .unwrap_or_else(|| "N/A (zero balance)".to_string()),
+    ]);
+
+    println!("{table}\n");
+
     Ok(())
 }

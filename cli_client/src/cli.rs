@@ -12,7 +12,7 @@ pub struct CliArgs {
     pub keypair: String,
 
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: Option<Commands>,
 }
 
 #[derive(Args, Debug)]
