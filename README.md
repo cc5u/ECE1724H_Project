@@ -29,11 +29,11 @@ We proposed an automated trading agent in our project proposal; however, we are 
 
 
 ## Features
-### Automated Market Maker – Decentralized Exchange
+## Automated Market Maker – Decentralized Exchange
 
 This project delivers a fully functional Automated Market Maker (AMM) decentralized exchange implemented as an on-chain Solana program using **Rust** and the **Anchor framework**. The AMM follows a **constant-product liquidity model** and supports core decentralized exchange operations.
 
-#### Pool Initialization and PoolCounter
+### Pool Initialization and PoolCounter
 
 * Supports permissionless creation of new liquidity pools for arbitrary SPL token pairs.
 * Each pool is associated with a dedicated on-chain Pool account that stores:
@@ -60,6 +60,7 @@ This mechanism enables:
 
 By separating pool metadata (`Pool`) from global program state (`PoolCounter`), the design remains modular and extensible while avoiding the need for expensive on-chain scans.
 
+---
 ### Liquidity Provision and Withdrawal
 
 The AMM supports permissionless liquidity provision and withdrawal through a standardized LP (liquidity provider) token mechanism. Liquidity providers contribute pairs of SPL tokens to a pool and receive LP tokens that represent proportional ownership of the pool’s reserves.
@@ -109,7 +110,50 @@ This mechanism guarantees that:
 
 This design ensures that liquidity provision and withdrawal are fair, deterministic, and secure, while remaining fully compatible with standard SPL token tooling and off-chain clients.
 
+---
+### Token Swap
+The AMM enables permissionless token swaps between the two assets in each liquidity pool using a constant-product pricing mechanism. Swaps are executed entirely on-chain and draw liquidity from the pool’s vaults, ensuring deterministic and trustless execution.
+#### Swap Mechanics
+Token swaps follow the constant-product invariant:`x * y = k`
 
+where:
+* `x` and `y` are the reserves of Token A and Token B stored in the pool’s vaults
+* `k` remains constant across swaps (excluding fees).
+
+Users may swap in either direction: Token A → Token B or Token B → Token A.
+The output amount is computed based on the current reserve balances and the specified input amount, ensuring that pool liquidity is conserved and the invariant is respected.
+
+#### Fees and Price Impact
+
+Each swap applies a configurable fee, expressed in basis points, which is deducted from the input amount. Swap fees remain in the pool’s reserves, thereby increasing the value of LP shares over time and incentivizing liquidity providers.
+
+The pricing model naturally accounts for price impact: larger trades result in greater reserve imbalance and therefore incur higher slippage. This mechanism discourages excessively large trades relative to the available pool liquidity.
+
+#### Slippage Protection
+
+A slippage protection mechanism is implemented to protect users from adverse price movement. Swap instructions require users to specify a minimum acceptable output amount. If the computed output amount falls below this threshold, the transaction is reverted.
+
+This mechanism provides deterministic slippage bounds and helps protect users from sudden reserve changes as well as front-running and sandwich-style attacks in shared block environments.
+
+#### Execution and Authorization
+
+Swap execution consists of:
+* Transferring the input tokens from the user’s associated token account (ATA) to the appropriate pool vault.
+* Transferring the output tokens from the opposite vault back to the user.
+
+All vault transfers are authorized using a pool authority PDA, ensuring that only the AMM program can move pool funds and that no external account can drain reserves. All token movements are performed through CPI calls to the canonical SPL Token program.
+
+#### Correctness and Safety Guarantees
+
+Swap instructions validate:
+
+* Correct token mints and vault accounts,
+* Pool state consistency, and
+* Valid signer authorization.
+
+Arithmetic operations are guarded against overflow and invalid reserve states, and the constant-product invariant is preserved across all successful swap executions.
+
+This swap design provides deterministic pricing, strong safety guarantees, and economic correctness, closely mirroring the behavior of production-grade AMMs while remaining compact and auditable for educational and experimental use.
 
 ## User’s (or Developer’s) Guide
 
