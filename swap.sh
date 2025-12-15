@@ -1,8 +1,11 @@
-POOL_PUBKEY=9is954T9eDx1yDKaP3gqo1VKrAg5gjRSFj9p9krZFXuy
+POOL_PUBKEY=3LjkmU5ovuFhfsN5zMsgkPVGcdHbkKSMmazGjx3yLoom
 
 cd cli_client
 echo "=== Swap Token (A -> B) ==="
-cargo run -- \
+echo ""
+echo "=== User ATA Accounts Balance (before)==="
+spl-token accounts
+./target/release/cli_client \
     --cluster localnet \
     --keypair ~/.config/solana/id.json \
     swap \
@@ -10,5 +13,5 @@ cargo run -- \
     --amount-in 1000000000 \
     --minimum-out 9000000
 echo ""
-echo "=== User ATA Accounts ==="
+echo "=== User ATA Accounts Balance (after)==="
 spl-token accounts

@@ -1,8 +1,8 @@
-POOL_PUBKEY=4V3YyBD31X3U3sHKriTDDfxQtW7BWhFm4nkRvBEko2GE
+POOL_PUBKEY=Aq6jvkFwKrrBvM6v2eXhzP14TSre6CzCWzGcdGQeu1Gi
 
 cd cli_client
 echo "=== Add Liquidity ==="
-cargo run -- \
+./target/release/cli_client \
     --cluster localnet \
     --keypair ~/.config/solana/id.json \
     add-liquidity \
