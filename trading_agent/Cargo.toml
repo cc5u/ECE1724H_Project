@@ -4,10 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anchor-client = "0.32.1"
+anchor-client = { version = "0.32.1", features = ["async"] }
 anchor-lang = "0.32.1"
 anyhow = "1.0.100"
 amm_dex = { path = "../amm_dex/programs/amm_dex", features = ["no-entrypoint"] }
 clap = {version ="4.5.53", features = ["derive"]}
-serde = "1.0.228"
+serde = { version = "1.0.228", features = ["derive"] }
 shellexpand = "3.1.1"
+toml = "0.9.8"
+tokio = { version = "1", features = ["macros", "rt", "signal", "time"] }

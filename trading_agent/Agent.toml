@@ -1,0 +1,2 @@
+cluster = "localnet"
+keypair = "~/.config/solana/id.json"

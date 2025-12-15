@@ -1,4 +1,4 @@
-POOL_PUBKEY=9is954T9eDx1yDKaP3gqo1VKrAg5gjRSFj9p9krZFXuy
+POOL_PUBKEY=4V3YyBD31X3U3sHKriTDDfxQtW7BWhFm4nkRvBEko2GE
 
 cd cli_client
 echo "=== Add Liquidity ==="
@@ -7,8 +7,8 @@ cargo run -- \
     --keypair ~/.config/solana/id.json \
     add-liquidity \
     --pool "$POOL_PUBKEY" \
-    --amount-a 10000000000 \
-    --amount-b 5000000000
+    --amount-a 30000000000 \
+    --amount-b 25000000000
 echo ""
 echo "=== User ATA Accounts ==="
 spl-token accounts
