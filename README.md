@@ -288,7 +288,62 @@ The interactive interface allow users to interact with our AMM DEX without memor
 
 For `amount_a`, `amount_b`, `amount_in`, `lp_amount`, the interactive mode uses the same raw `u64` units as the subcommands (see the **Token unit consistency** section below for how raw amounts map to UI token amounts).
 
-## User’s (or Developer’s) Guide
+## Reproducibility Guide:
+
+### Environment setup on Mac
+Need to install Solana toolchain + Anchor (we use Anchor framework to build/deploy the program, and `spl-token` to create test tokens).
+Following install guide are from Solana guide (https://solana.com/docs/intro/installation)
+
+1) Install dependencies for Solana + Anchor
+```
+curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+```
+After installation, restart the terminal so `solana` / `anchor` are in PATH.
+
+2) Verify installation by checking versions
+```
+rustc --version && solana --version && anchor --version && spl-token --version
+```
+
+3) Generate the first Solana wallet (payer)
+If you do not have a default keypair yet:
+```
+solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
+solana address
+```
+
+Optional: create a second wallet (useful for testing / simulating another user):
+```
+solana-keygen new --no-bip39-passphrase -o ~/id2.json
+solana-keygen pubkey ~/id2.json
+```
+You can switch users in our CLI by passing `--keypair ~/id2.json`.
+
+4) Point Solana CLI to localnet (for testing)
+```
+solana config set --url localhost
+solana config get
+```
+
+Before running `spl-token` commands on localnet, start `solana-test-validator --reset` (see next section) and fund the wallet:
+```
+solana airdrop 5
+solana balance
+```
+
+Continue with next section (User’s Guide) Guto reproduce results.
+
+### Token unit consistency
+
+Token amount units (why numbers look different)
+* `spl-token mint <MINT> <TOKEN_AMOUNT>` uses **token amount** (human-readable). Example: `spl-token mint <MINT> 10` means “mint 10 tokens”.
+* Our Rust CLI uses **raw amount** (`u64`, smallest unit) in arguments like `--amount-a`, `--amount-b`, `--amount-in`.
+  * If a token has **9 decimals** (default), then `1 token = 1_000_000_000` raw units.
+  * If a token has **0 decimals**, then `1 token = 1` raw unit.
+* CLI outputs like `wallet` / `inspect-pool` show **UI amounts** for readability, while the on-chain program always uses raw units.
+  * Example (9 decimals): `spl-token mint <MINT> 100` mints 100 tokens = `100_000_000_000` raw units, and `--amount-a 30000000000` in our CLI means 30 tokens.
+
+## User’s Guide
 
 1. Clone the github repository: 
     `git clone https://github.com/cc5u/ECE1724H_Project.git`
@@ -551,59 +606,6 @@ For `amount_a`, `amount_b`, `amount_in`, `lp_amount`, the interactive mode uses 
         ```
     15) Quit: entering `q` to quit the program
 
-## Reproducibility Guide:
-
-### Environment setup on Mac
-Need to install Solana toolchain + Anchor (we use Anchor framework to build/deploy the program, and `spl-token` to create test tokens).
-Following install guide are from Solana guide (https://solana.com/docs/intro/installation)
-
-1) Install dependencies for Solana + Anchor
-```
-curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
-```
-After installation, restart the terminal so `solana` / `anchor` are in PATH.
-
-2) Verify installation by checking versions
-```
-rustc --version && solana --version && anchor --version && spl-token --version
-```
-
-3) Generate the first Solana wallet (payer)
-If you do not have a default keypair yet:
-```
-solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
-solana address
-```
-
-Optional: create a second wallet (useful for testing / simulating another user):
-```
-solana-keygen new --no-bip39-passphrase -o ~/id2.json
-solana-keygen pubkey ~/id2.json
-```
-You can switch users in our CLI by passing `--keypair ~/id2.json`.
-
-4) Point Solana CLI to localnet (for testing)
-```
-solana config set --url localhost
-solana config get
-```
-
-Before running `spl-token` commands on localnet, start `solana-test-validator --reset` (see next section) and fund the wallet:
-```
-solana airdrop 5
-solana balance
-```
-
-### Token unit consistency
-
-Token amount units (why numbers look different)
-* `spl-token mint <MINT> <TOKEN_AMOUNT>` uses **token amount** (human-readable). Example: `spl-token mint <MINT> 10` means “mint 10 tokens”.
-* Our Rust CLI uses **raw amount** (`u64`, smallest unit) in arguments like `--amount-a`, `--amount-b`, `--amount-in`.
-  * If a token has **9 decimals** (default), then `1 token = 1_000_000_000` raw units.
-  * If a token has **0 decimals**, then `1 token = 1` raw unit.
-* CLI outputs like `wallet` / `inspect-pool` show **UI amounts** for readability, while the on-chain program always uses raw units.
-  * Example (9 decimals): `spl-token mint <MINT> 100` mints 100 tokens = `100_000_000_000` raw units, and `--amount-a 30000000000` in our CLI means 30 tokens.
-
 ## Contrubution
 
 Below is the table showing the contirbution of both teammebers:
@@ -611,10 +613,10 @@ Below is the table showing the contirbution of both teammebers:
 
 |  | Wu, Chia-Chun | Chen, Yuanhan |
 | -------- | -------- | -------- |
-| AMM Dex     | Implemented Pool Initialization,<br>Added bash scrips for testing and running,<br>Implemented Token Swap,<br> Added pool counter to enable multiple pools creation even the tokens are same    | Text     |
-| CLI Client     | Pool Initialization function,<br>Added bash scrips for testing and running,<br>Token Swap function in accordance to the AMM Dex, <br> Pool(s) inspection implementation,<br>Beautify CLI interface and outputs| Text     |
-| Trading Agent    | Researching arbitrage tading strategy,<br>Testing fetching pool information on the AMM Dex.|  Text  |
-|Documentation<br>and <br>Videos|Final Report<br>Video Demo|Text|
+| AMM Dex     | Implemented Pool Initialization,<br>Added bash scrips for testing and running,<br>Implemented Token Swap,<br> Added pool counter to enable multiple pools creation even the tokens are same    | Architecture design,<br>Modularized the code,<br>Implemented Add / Remove liquidity, bps fee and LP token,<br>Added bash scrips for testing and running,    |
+| CLI Client     | Pool Initialization function,<br>Added bash scrips for testing and running,<br>Token Swap function in accordance to the AMM Dex, <br> Pool(s) inspection implementation,<br>Beautify CLI interface and outputs| Architecture design,<br>Modularized the code,<br>Add / remove liquidity, bps fee and LP token in accordance to the AMM Dex,     |
+| Trading Agent    | Researching arbitrage tading strategy,<br>Testing fetching pool information on the AMM Dex.|  Testing  |
+|Documentation<br>and <br>Videos|Final Report<br>Video Demo|Final Report<br>Presentation|
 
 ## Lessons learned and concluding remarks:
 
