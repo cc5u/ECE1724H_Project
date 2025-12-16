@@ -1,5 +1,6 @@
 # Video Slide Presentation
-Video Slides Presentation Link:
+Video Presentation Link: https://youtu.be/i1awa09sefw
+Video Slides Link: https://docs.google.com/presentation/d/1SD3embVnKnCANyhMzNi9Zb8PkbF5Krzncy6MY1zlXBY/edit?usp=sharing
 
 # Video Demo
 Video Demo Link: https://youtu.be/49kVeaJu-cE
@@ -8,7 +9,7 @@ Video Demo Link: https://youtu.be/49kVeaJu-cE
 # Final Report
 Team members information:
 
-Chen, Yuanhan |            |
+Chen, Yuanhan | 1006741705 | yuanhan.chen@mail.utoronto.ca
 
 Wu, Chia-Chun | 1012134101 | chiachun910711@gmail.com
 
@@ -184,6 +185,15 @@ Below is the table showing the contirbution of both teammebers:
 
 ## Lessons learned and concluding remarks:
 
+This project make us understand how modern blockchain systems operate in practice. By implementing an on-chain AMM from scratch, we gained hands-on experience with fundamental blockchain concepts such as account-based state models, transaction execution, program ownership, and trustless state transitions. Beyond theoretical knowledge, building and testing the system on a live Solana cluster clarified how decentralized programs enforce correctness and security without centralized control.
+
+Working within the Solana ecosystem exposed us to a high-performance blockchain architecture optimized for parallelism and low-latency execution. We learned how Solana’s account model, program-derived addresses (PDAs), and SPL token standard enable scalable decentralized applications. Interacting with Solana through both CLI tools and custom Rust clients reinforced the importance of precise account management, deterministic address derivation, and careful handling of on-chain resources.
+
+The Anchor framework significantly streamlined the development of our smart contract logic. Through Anchor, we learned how declarative account constraints, automatic serialization, and CPI abstractions reduce boilerplate while improving safety and readability. At the same time, the project highlighted the need to understand Anchor’s underlying abstractions—such as PDA bumps and signer semantics—to avoid subtle bugs and ensure correct program behavior.
+
+Although we were unable to fully complete the off-chain trading agent within the project timeline, both team members invested significant effort in researching its design and implementation. This exploration introduced us to practical algorithmic trading strategies, including arbitrage detection and band-based market-making, within a decentralized setting. From a Rust-focused perspective, this work reinforced key concepts such as asynchronous programming, state management, and modular system architecture. It also highlighted the importance of robust error handling, slippage control, and risk management when designing off-chain automation that interacts safely and deterministically with on-chain execution.
+
+In conclusion, this project successfully bridged theoretical blockchain concepts with hands-on Rust systems programming. By developing a decentralized exchange entirely in Rust—spanning on-chain smart contracts, client-side tooling, and the foundations of an autonomous agent, we deepened our understanding of Rust’s safety guarantees and ecosystem tooling. The project emphasized Rust as a practical language for building reliable, high-performance systems, and provided a strong foundation for future work in systems programming and distributed applications.
 
 ## References
 1. https://github.com/raydium-io/raydium-amm/tree/master
