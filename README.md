@@ -297,53 +297,53 @@ Need to install Solana toolchain + Anchor (we use Anchor framework to build/depl
 Following install guide are from Solana guide (https://solana.com/docs/intro/installation)
 
 1) Install dependencies for Solana + Anchor
-```
-curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
-```
-After installation, restart the terminal so `solana` / `anchor` are in PATH.
+   ```
+   curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+   ```
+   After installation, restart the terminal so `solana` / `anchor` are in PATH.
 
 2) Verify installation by checking versions
-```
-rustc --version && solana --version && anchor --version && spl-token --version
-```
-   Our verion output is like this:
    ```
-   rustc 1.92.0 (ded5c06cf 2025-12-08)
-   solana-cli 3.0.13 (src:f5a29bf6; feat:3604001754, client:Agave)
-   anchor-cli 0.32.1
-   spl-token-cli 5.4.0
+   rustc --version && solana --version && anchor --version && spl-token --version
    ```
-   Make sure you have the correct version.
+      Our verion output is like this:
+      ```
+      rustc 1.92.0 (ded5c06cf 2025-12-08)
+      solana-cli 3.0.13 (src:f5a29bf6; feat:3604001754, client:Agave)
+      anchor-cli 0.32.1
+      spl-token-cli 5.4.0
+      ```
+      Make sure you have the correct version.
 
 3) Generate the first Solana wallet (payer)
-If you do not have a default keypair yet:
-```
-solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
-solana address
-```
-
-Optional: create a second wallet (useful for testing / simulating another user):
-```
-solana-keygen new --no-bip39-passphrase -o ~/id2.json
-solana-keygen pubkey ~/id2.json
-```
-You can switch users in our CLI by passing `--keypair ~/id2.json`.
+   If you do not have a default keypair yet:
+   ```
+   solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
+   solana address
+   ```
+   
+   Optional: create a second wallet (useful for testing / simulating another user):
+   ```
+   solana-keygen new --no-bip39-passphrase -o ~/id2.json
+   solana-keygen pubkey ~/id2.json
+   ```
+   You can switch users in our CLI by passing `--keypair ~/id2.json`.
 
 4) Point Solana CLI to localnet (for testing)
-```
-solana config set --url localhost
-solana config get
-```
-
-Before running `spl-token` commands on localnet, start `solana-test-validator --reset` (see next section) and fund the wallet:
-```
-solana airdrop 5
-solana balance
-```
+   ```
+   solana config set --url localhost
+   solana config get
+   ```
+   
+   Before running `spl-token` commands on localnet, start `solana-test-validator --reset` (see next section) and fund the wallet:
+   ```
+   solana airdrop 5
+   solana balance
+   ```
 
 5) Continue with **next section (User’s Guide)** to reproduce results.
 
-### Token unit consistency
+#### Token unit consistency
 
 Token amount units (why numbers look different)
 * `spl-token mint <MINT> <TOKEN_AMOUNT>` uses **token amount** (human-readable). Example: `spl-token mint <MINT> 10` means “mint 10 tokens”.
