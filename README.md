@@ -290,6 +290,267 @@ For `amount_a`, `amount_b`, `amount_in`, `lp_amount`, the interactive mode uses 
 
 ## User’s (or Developer’s) Guide
 
+1. Clone the github repository: 
+    `git clone https://github.com/cc5u/ECE1724H_Project.git`
+2. Go to the project directory: 
+    ```
+    cd ECE1724H_Project
+    ```
+4. Start the `solana-test-validator`:
+    `solana-test-validator --reset`
+5. Open another terminal and go to the `amm_dex` folder:
+    ```
+    cd amm_dex/
+    anchor keys sync
+    anchor build
+    anchor deploy
+    ```
+    This will sync program ids for the configured cluster (localnet) and build the AMM Dex, then deploy it to your localnet.
+6. Create SPL Tokens
+   
+    Use this command to create SPL token (for this project, you need to crete at least two tokens): `spl-token create-token`
+    The output after running the command should look like this:
+    ```
+    Creating token 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv under program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+    Address:  2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv
+    Decimals:  9
+    Signature: UkASmn1MvEAsicixCx1RpyxS8jsj4BPZj33LpncBHn3K8yccuBEmsfBmXurusyrhDEJzzVBpg76aGiB77ngGsGj
+    ```
+7. Create User ATA accounts and Mint Tokens
+
+   After creating the token, you need to create the ATA account for each token and mint the token for yourself.
+    
+    Replace the token address (e.g. 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv) to the TOKEN_A and specifying how many tokens you want to mint:
+    ```
+    spl-token create-account TOKEN_A
+    spl-token mint TOKEN_A AMOUNT
+    ```
+    
+    To check the accounts: 
+    `spl-token accounts`
+    You will see something like:
+    ```
+    Token                                         Balance
+    -----------------------------------------------------
+    2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv  100
+    AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4  100
+    ```
+
+9. Open another terminal and go to the `cli_client` folder:
+
+    ```
+      cd cli_client/
+    ```
+10. Build and run the project: 
+    ```
+    cargo build
+    cargo run
+    ```
+    or
+    ```
+    cargo build --release
+    ./target/release/cli_client
+    ```
+11. Then you will see the interactive interface:
+    ```
+    =================================================================
+    -------------------- Interactive AMM DEX CLI --------------------
+    =================================================================
+    Wallet: Your_Key_Path
+    Balance: Your_SOL_Balance SOL
+
+    - choose an option:
+    1) InitPool
+    2) AddLiquidity
+    3) RemoveLiquidity
+    4) Swap
+    5) InspectPool
+    6) ShowingDex
+    7) Wallet (SOL + tokens)
+    q) Quit
+    ```
+    To add the SOL balance: `solana airdrop 5`
+    1) InitPool
+
+        Enter `1` to initilaize a new liquidity pool, you need to provide both token addresses:
+        ```
+        > 1
+        token_a_mint: 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv
+        token_b_mint: AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4
+        fee_bps (number, default 30): 30
+        Initialized pool 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex 
+        tx: 49nkgvpeAHDWNZZeHzGjUUT9fCB2srWAyGjJ6BC9vC4YfRtmjChRdPHEgzdDZXHDUrrpWCndnSLUxGs8giZZXZA7
+        Pool ID           : 0
+        Pool counter PDA  : 3UvRQwbo9J8o9iZ9o4SPdfgRL17fNotqc6yH2PhqUNe1
+        Pool PDA          : 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        Pool authority PDA: 9Y58a1oBrg1Mighn875isxU8nPLoyLXvC2ZMbPJ8n1oZ
+        Token A mint      : 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv
+        Token B mint      : AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4
+        Token A vault     : 9ncATe7EbiCuV6fM9Jgnf8fASeRQW5Kq5kiuopztTh7E
+        Token B vault     : Bk3dWB2LomoEaZry4X99YKAdjUPFKQehDQQaxf1EfQxm
+        LP mint           : Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro
+        ```
+    3) AddLiquidity
+
+        Enter `2` to add liquidity to a pool, you need to input the pool address (Pool PDA) and the amounts you want to deposit:
+        ```
+        > 2
+        pool: 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        amount_a (u64): 20000000000
+        amount_b (u64): 40000000000
+        Added liquidity to pool 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        tx: 4WszhmX5XWnhiudTngxFqgtTE14oNKGJtgJDnxSFiQ3gCiCaFDXC1pJu3Ay1MayhEkjiS41CaUvkZEei7a2HC96h
+        Created user LP ATA: G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M
+        User token A ATA: 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy
+        User token B ATA: 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd
+        User LP ATA: G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M
+        ```
+        After deposit some liquidity, your account balance should change:
+        ```
+        +----------------------------------------------------------------------------------------------------------------------------------+
+        | Token                                          Mint                                           Amount                             |
+        +==================================================================================================================================+
+        | 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy   2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv   80 (raw: 80000000000, decimals: 9) |
+        |                                                                                                                                  |
+        | 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd   AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4   60 (raw: 60000000000, decimals: 9) |
+        |                                                                                                                                  |
+        | G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M   Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro   60 (raw: 60000000000, decimals: 9) |
+        +----------------------------------------------------------------------------------------------------------------------------------+
+        ```
+    5) RemoveLiquidity
+
+        Enter `3` to remove liquidity to a pool, you need to input the pool address (Pool PDA) and the amount of LP token you want to burn:
+        ```
+        > 3
+        pool: 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        lp_amount (u64): 30000000000
+        Removed 30000000000 LP from pool
+        7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex tx: icgHRX6S5SmJENvTnSUxUjevzYjv7UuSjuNqLgzQiLi4z1qtJ6PhGUKAWM4RzNmNPSsyP8oemgJicDZhQX1FDCc
+        User token A ATA: 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy
+        User token B ATA: 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd
+        User LP ATA: G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M
+        ```
+        After withdraw some liquidity, your account balance should change:
+        ```
+        +----------------------------------------------------------------------------------------------------------------------------------+
+        | Token                                          Mint                                           Amount                             |
+        +==================================================================================================================================+
+        | 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy   2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv   90 (raw: 90000000000, decimals: 9) |
+        |                                                                                                                                  |
+        | 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd   AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4   80 (raw: 80000000000, decimals: 9) |
+        |                                                                                                                                  |
+        | G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M   Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro   30 (raw: 30000000000, decimals: 9) |
+        +----------------------------------------------------------------------------------------------------------------------------------+
+        ```
+    7) Swap
+
+         Enter `4` to perform swap token, you need to input the pool address (Pool PDA), the amounts you want to trade in, the minimum outputm, and specifying the direction (`y` or `n`):
+         ```
+         > 4
+         pool: 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+         amount_in (u64): 5000000000
+         minimum_out (u64): 100
+         direction (A->B type 'y' else 'n'): y
+         Swap A -> B complete.
+         Pool: 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        tx: 5joMQPAUjHMFmUMGivD27TY3tnJyX2bR8CxPeDNFqGqdopwBxTcTQisbAEunageN1wo1fMzYf5Gd8rAeXN47sPW8
+        Source ATA: 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy
+        Destination ATA: 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd
+
+         ```
+         After swapping your token, your account balance should change:
+         ```
+         > 7
+        Wallet: 6jE69LoQ7pgMu4DAXrFxuvY8NZkKMGnR6A7FuXfwVP4n | SOL: 499999998.363112
+        Token accounts (ATAs):
+        +--------------------------------------------------------------------------------------------------------------------------------------------+
+        | Token                                          Mint                                           Amount                                       |
+        +============================================================================================================================================+
+        | 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy   2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv   85 (raw: 85000000000, decimals: 9)           |
+        |                                                                                                                                            |
+        | 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd   AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4   86.653319986 (raw: 86653319986, decimals: 9) |
+        |                                                                                                                                            |
+        | G7XBQQsvBtcfZwEpG3Y3WEWAH7zqNCGP4oh84n47Z84M   Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro   30 (raw: 30000000000, decimals: 9)           |
+        +--------------------------------------------------------------------------------------------------------------------------------------------+
+         ```
+    9) InspectPool
+
+        Enter `5` to inspec the pool information. You need to input the pool address (Pool PDA):
+        ```
+        > 5
+        pool: 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex
+        +---------------+----------------------------------------------------------------------+
+        | Field         | Value                                                                |
+        +======================================================================================+
+        | Pool account  | 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex                         |
+        |---------------+----------------------------------------------------------------------|
+        | Pool ID       | 0                                                                    |
+        |---------------+----------------------------------------------------------------------|
+        | Token A mint  | 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv                         |
+        |---------------+----------------------------------------------------------------------|
+        | Token A vault | 9ncATe7EbiCuV6fM9Jgnf8fASeRQW5Kq5kiuopztTh7E (balance: 15)           |
+        |---------------+----------------------------------------------------------------------|
+        | Token B mint  | AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4                         |
+        |---------------+----------------------------------------------------------------------|
+        | Token B vault | Bk3dWB2LomoEaZry4X99YKAdjUPFKQehDQQaxf1EfQxm (balance: 13.346680014) |
+        |---------------+----------------------------------------------------------------------|
+        | LP mint       | Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro                         |
+        |---------------+----------------------------------------------------------------------|
+        | LP supply     | 30                                                                   |
+        |---------------+----------------------------------------------------------------------|
+        | Fee (bps)     | 30                                                                   |
+        |---------------+----------------------------------------------------------------------|
+        | Price A/B     | 1.123875                                                             |
+        +---------------+----------------------------------------------------------------------+
+        ```
+    11) ShowingDex
+
+        Enter `6` to inspec all pools information on the AMM Dex:
+        ```
+        > 6
+        Found 1 pool(s) for program 6uumabkAhB7jd7BftfQgS78hbaXd3AHDDrMtyAnABdor
+        +---------------+----------------------------------------------------------------------+
+        | Field         | Value                                                                |
+        +======================================================================================+
+        | Pool #        | 1                                                                    |
+        |---------------+----------------------------------------------------------------------|
+        | Pool account  | 7bUZe22pRWsP7Kbx1UAz5Gvnx9pApPjFfXrvGYdcNVex                         |
+        |---------------+----------------------------------------------------------------------|
+        | Pool ID       | 0                                                                    |
+        |---------------+----------------------------------------------------------------------|
+        | Token A mint  | 2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv                         |
+        |---------------+----------------------------------------------------------------------|
+        | Token A vault | 9ncATe7EbiCuV6fM9Jgnf8fASeRQW5Kq5kiuopztTh7E (balance: 15)           |
+        |---------------+----------------------------------------------------------------------|
+        | Token B mint  | AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4                         |
+        |---------------+----------------------------------------------------------------------|
+        | Token B vault | Bk3dWB2LomoEaZry4X99YKAdjUPFKQehDQQaxf1EfQxm (balance: 13.346680014) |
+        |---------------+----------------------------------------------------------------------|
+        | LP mint       | Dx5Gwd6AyCMUASCLBHgYarbDLCqoLUpCm2ADnbNDGCro                         |
+        |---------------+----------------------------------------------------------------------|
+        | LP supply     | 30                                                                   |
+        |---------------+----------------------------------------------------------------------|
+        | Fee (bps)     | 30                                                                   |
+        |---------------+----------------------------------------------------------------------|
+        | Price A/B     | 1.123875                                                             |
+        +---------------+----------------------------------------------------------------------+
+        ```
+    13) Wallet (SOL + tokens):
+
+        Enter `7` to see your account balance, the output will similiar to this:
+        ```
+        Wallet: 6jE69LoQ7pgMu4DAXrFxuvY8NZkKMGnR6A7FuXfwVP4n | SOL: 499999998.374095
+        Token accounts (ATAs):
+        +------------------------------------------------------------------------------------------------------------------------------------+
+        | Token                                          Mint                                           Amount                               |
+        +====================================================================================================================================+
+        | 3J37jDFjVkxRRWZihwJ1yYYzPzrKAnatAK1EZ7RcahKy   2vkPUFEER4azYpymYUemypk1GDM4LEZngTQkhRgYPunv   100 (raw: 100000000000, decimals: 9) |
+        |                                                                                                                                    |
+        | 5ZDVJj8VdZ9wjmm7fGN19FSQFv8saYZiwis4qZqnDifd   AQDAWpkivvh8p95unPiFiqP5Rj195oNWpGnSuoAW4dS4   100 (raw: 100000000000, decimals: 9) |
+        +------------------------------------------------------------------------------------------------------------------------------------+
+        ```
+    15) Quit: entering `q` to quit the program
+
 ## Reproducibility Guide:
 
 ### Environment setup on Mac
