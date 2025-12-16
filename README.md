@@ -167,9 +167,181 @@ This swap design provides deterministic pricing, strong safety guarantees, and e
 
 ## CLI Client
 
+To interact with our on-chain AMM program, we implemented a Rust-based CLI client (`cli_client`). Instead of relying on TypeScript/Python SDKs, the client uses `anchor-client` to construct and send transactions to our Anchor program, making the entire stack (on-chain + off-chain) Rust-native.
+
+The CLI supports two usage styles:
+
+* **Command mode (recommended for scripting):** run a single subcommand (e.g., initialize pool, add liquidity, swap).
+* **Interactive mode:** run the binary without a subcommand to open a simple menu-driven interface.
+
+### Common flags
+
+* `--cluster`: `localnet` / `devnet` / `mainnet` (default: `localnet`)
+* `--keypair`: path to the wallet keypair used as the transaction signer (default: `~/.config/solana/id.json`)
+
+These options make it easy to switch between different clusters and to simulate multiple users by providing different keypairs.
+
+### Supported commands (core features)
+
+* **Initialize pool (`init-pool`)**  
+  Create a new liquidity pool by selecting Token A mint, Token B mint, and a swap fee (`fee_bps`) in basis points.  
+  The CLI derives required PDAs (PoolCounter / Pool / PoolAuthority), sends the initialize transaction, and prints the resulting addresses (pool PDA, vaults, LP mint).
+
+* **Add liquidity (`add-liquidity`)**  
+  Deposit Token A and Token B into the pool vaults, and receive LP tokens that represent ownership of the pool.  
+  The CLI checks that the user has the required LP token ATA, and it will create the LP ATA automatically if missing.
+
+* **Remove liquidity (`remove-liquidity`)**  
+  Burn LP tokens and redeem the proportional underlying Token A and Token B back to the user’s ATAs.
+
+* **Swap (`swap`)**  
+  Swap between Token A and Token B using the constant-product pricing rule implemented on-chain.  
+  Users provide `minimum_out` for slippage protection. Direction is controlled by `--is-a-to-b` (A→B) or omitting it (B→A).
+
+### User-friendly commands (inspection and wallet)
+
+* **Inspect one pool (`inspect-pool`)**  
+  Prints a table of pool metadata and on-chain balances (vault reserves, LP supply, fee).
+
+* **Show all pools (`showing-dex`)**  
+  Scans all `Pool` accounts owned by the program and prints a summary table for each pool.
+
+* **Wallet view (`wallet`)**  
+  Displays current SOL balance and all SPL token account balances for the selected keypair.
+
+### Example core functions usage
+
+Initialize a pool:
+```
+cargo run -p cli_client -- \
+  --cluster localnet \
+  --keypair ~/.config/solana/id.json \
+  init-pool \
+  --token-a-mint <TOKEN_A_MINT> \
+  --token-b-mint <TOKEN_B_MINT> \
+  --fee-bps 30
+```
+
+Add liquidity:
+```
+cargo run -p cli_client -- \
+  --cluster localnet \
+  --keypair ~/.config/solana/id.json \
+  add-liquidity \
+  --pool <POOL_PDA> \
+  --amount-a 1000000000 \
+  --amount-b 1000000000
+```
+
+Remove liquidity:
+```
+cargo run -- \
+  --cluster localnet \
+  --keypair ~/.config/solana/id.json \
+  remove-liquidity \
+  --pool <POOL_PUBKEY> \
+  --lp-amount 5000
+```
+
+Swap A→B with slippage protection:
+```
+cargo run -p cli_client -- \
+  --cluster localnet \
+  --keypair ~/.config/solana/id.json \
+  swap \
+  --pool <POOL_PDA> \
+  --amount-in 1000000000 \
+  --minimum-out 9000000 \
+  --is-a-to-b
+```
+
+### CLI interactive interface
+
+```
+=================================================================
+-------------------- Interactive AMM DEX CLI --------------------
+=================================================================
+Wallet: /Users/oscar178/.config/solana/id.json
+Balance: 499999997.360804 SOL
+
+- choose an option:
+1) InitPool
+2) AddLiquidity
+3) RemoveLiquidity
+4) Swap
+5) InspectPool
+6) ShowingDex
+7) Wallet (SOL + tokens)
+q) Quit
+```
+
+The interactive interface allow users to interact with our AMM DEX without memorizing all subcommands. After running the CLI without specifying a command (optionally use `--keypair <KEYPAIR_ADDR>` to switch to another wallet), it will show the current wallet path, SOL balance, and a menu of actions:
+
+* `1) InitPool`: input Token A mint, Token B mint, and swap fee (`fee_bps`, default 30).
+* `2) AddLiquidity`: input pool address, `amount_a`, `amount_b` and deposit both tokens into the pool to receive LP tokens.
+* `3) RemoveLiquidity`: input pool address and `lp_amount` to burn LP tokens and redeem Token A/B.
+* `4) Swap`: input pool address, `amount_in`, `minimum_out`, and the direction (A→B or B→A).
+* `5) InspectPool`: input pool address to print pool status (vault balances, LP supply, fee).
+* `6) ShowingDex`: list all pools created by our program.
+* `7) Wallet`: print SOL + all token balances for the current keypair.
+* `q) Quit`: exit the menu.
+
+For `amount_a`, `amount_b`, `amount_in`, `lp_amount`, the interactive mode uses the same raw `u64` units as the subcommands (see the **Token unit consistency** section below for how raw amounts map to UI token amounts).
+
 ## User’s (or Developer’s) Guide
 
 ## Reproducibility Guide:
+
+### Environment setup on Mac
+Need to install Solana toolchain + Anchor (we use Anchor framework to build/deploy the program, and `spl-token` to create test tokens).
+Following install guide are from Solana guide (https://solana.com/docs/intro/installation)
+
+1) Install dependencies for Solana + Anchor
+```
+curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+```
+After installation, restart the terminal so `solana` / `anchor` are in PATH.
+
+2) Verify installation by checking versions
+```
+rustc --version && solana --version && anchor --version && spl-token --version
+```
+
+3) Generate the first Solana wallet (payer)
+If you do not have a default keypair yet:
+```
+solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
+solana address
+```
+
+Optional: create a second wallet (useful for testing / simulating another user):
+```
+solana-keygen new --no-bip39-passphrase -o ~/id2.json
+solana-keygen pubkey ~/id2.json
+```
+You can switch users in our CLI by passing `--keypair ~/id2.json`.
+
+4) Point Solana CLI to localnet (for testing)
+```
+solana config set --url localhost
+solana config get
+```
+
+Before running `spl-token` commands on localnet, start `solana-test-validator --reset` (see next section) and fund the wallet:
+```
+solana airdrop 5
+solana balance
+```
+
+### Token unit consistency
+
+Token amount units (why numbers look different)
+* `spl-token mint <MINT> <TOKEN_AMOUNT>` uses **token amount** (human-readable). Example: `spl-token mint <MINT> 10` means “mint 10 tokens”.
+* Our Rust CLI uses **raw amount** (`u64`, smallest unit) in arguments like `--amount-a`, `--amount-b`, `--amount-in`.
+  * If a token has **9 decimals** (default), then `1 token = 1_000_000_000` raw units.
+  * If a token has **0 decimals**, then `1 token = 1` raw unit.
+* CLI outputs like `wallet` / `inspect-pool` show **UI amounts** for readability, while the on-chain program always uses raw units.
+  * Example (9 decimals): `spl-token mint <MINT> 100` mints 100 tokens = `100_000_000_000` raw units, and `--amount-a 30000000000` in our CLI means 30 tokens.
 
 ## Contrubution
 
