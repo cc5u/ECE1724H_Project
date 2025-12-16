@@ -1,3 +1,10 @@
+# Video Slide Presentation
+Video Slides Presentation Link:
+
+# Video Demo
+Video Demo Link:
+
+
 # Final Report
 Team members information:
 
@@ -155,11 +162,25 @@ Arithmetic operations are guarded against overflow and invalid reserve states, a
 
 This swap design provides deterministic pricing, strong safety guarantees, and economic correctness, closely mirroring the behavior of production-grade AMMs while remaining compact and auditable for educational and experimental use.
 
+---
+
+## CLI Client
+
 ## User’s (or Developer’s) Guide
 
 ## Reproducibility Guide:
 
 ## Contrubution
+
+Below is the table showing the contirbution of both teammebers:
+
+
+|  | Wu, Chia-Chun | Chen, Yuanhan |
+| -------- | -------- | -------- |
+| AMM Dex     | Implemented Pool Initialization,<br>Added bash scrips for testing and running,<br>Implemented Token Swap,<br> Added pool counter to enable multiple pools creation even the tokens are same    | Text     |
+| CLI Client     | Pool Initialization function,<br>Added bash scrips for testing and running,<br>Token Swap function in accordance to the AMM Dex, <br> Pool(s) inspection implementation,<br>Beautify CLI interface and outputs| Text     |
+| Trading Agent    | Researching arbitrage tading strategy,<br>Testing fetching pool information on the AMM Dex.|  Text  |
+|Documentation<br>and <br>Videos|Final Report<br>Video Demo|Text|
 
 ## Lessons learned and concluding remarks:
 
