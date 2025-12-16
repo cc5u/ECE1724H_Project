@@ -1,5 +1,7 @@
 # Video Slide Presentation
+
 Video Presentation Link: https://youtu.be/i1awa09sefw
+
 Video Slides Link: https://docs.google.com/presentation/d/1SD3embVnKnCANyhMzNi9Zb8PkbF5Krzncy6MY1zlXBY/edit?usp=sharing
 
 # Video Demo
@@ -304,6 +306,14 @@ After installation, restart the terminal so `solana` / `anchor` are in PATH.
 ```
 rustc --version && solana --version && anchor --version && spl-token --version
 ```
+   Our verion output is like this:
+   ```
+   rustc 1.92.0 (ded5c06cf 2025-12-08)
+   solana-cli 3.0.13 (src:f5a29bf6; feat:3604001754, client:Agave)
+   anchor-cli 0.32.1
+   spl-token-cli 5.4.0
+   ```
+   Make sure you have the correct version.
 
 3) Generate the first Solana wallet (payer)
 If you do not have a default keypair yet:
@@ -331,7 +341,7 @@ solana airdrop 5
 solana balance
 ```
 
-Continue with next section (User’s Guide) Guto reproduce results.
+5) Continue with **next section (User’s Guide)** to reproduce results.
 
 ### Token unit consistency
 
@@ -351,7 +361,7 @@ Token amount units (why numbers look different)
     ```
     cd ECE1724H_Project
     ```
-4. Start the `solana-test-validator`:
+4. Start the `solana-test-validator` (if you haven't started yet):
     `solana-test-validator --reset`
 5. Open another terminal and go to the `amm_dex` folder:
     ```
